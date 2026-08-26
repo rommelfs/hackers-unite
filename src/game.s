@@ -12,10 +12,11 @@
 .import boss_defeats, boss_hits, trap_hits, secret_found
 .import falling_drops, rolling_cycles, action_hits
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
+.import respawn_pending, respawn_render_row, death_timer, sprite_enable_shadow, sprite_msb_shadow
 .import camera_pixel_lo, camera_pixel_hi, camera_char
 .import rendered_camera_char, screen_a_char, screen_b_char
 .import visible_buffer, visible_d018, scroll_d016
-.import window_render_target
+.import window_render_target, window_render_respawn_slice, scroll_return_update
 .import level_layout_apply, level_layout_begin, level_layout_step
 .import sfx_damage, sfx_level_clear
 
@@ -47,6 +48,9 @@ game_init:
     sta continue_tick
     sta continues_used
     sta continue_timeouts
+    sta respawn_pending
+    sta respawn_render_row
+    sta death_timer          ; compatibility only; sliced recovery owns timing
 .ifdef PHASE12_PREVIEW
     lda #3
 .else
@@ -76,11 +80,25 @@ game_update:
     rts
 :
     cmp #GAME_OVER
-    beq @game_over
+    bne :+
+    jmp @game_over
+:
     cmp #GAME_CONTINUE
-    beq @continue
+    bne :+
+    jmp @continue
+:
+    cmp #GAME_BRIEFING
+    bne :+
+    jmp @briefing
+:
+    cmp #GAME_DEATH
+    bne :+
+    jmp @death
+:
     cmp #GAME_LEVEL_CLEAR
-    beq @level_clear
+    bne :+
+    jmp @level_clear
+:
     cmp #GAME_COMPLETE
     bne :+
     jmp @complete
@@ -101,6 +119,44 @@ game_update:
     lda #GAME_PLAY
     sta game_state
     rts
+
+@briefing:
+    lda joy_pressed
+    and #JOY_FIRE
+    bne :+
+    rts
+:
+    jsr player_level_start
+    jsr objects_init
+    jmp begin_level_load
+
+@death:
+    lda death_timer
+    beq @death_return
+    dec death_timer
+    rts
+@death_return:
+    jsr scroll_return_update
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    beq @death_arrived
+    rts
+@death_arrived:
+    lda lives
+    bne @death_respawn
+    lda #GAME_CONTINUE
+    sta game_state
+    rts
+@death_respawn:
+    lda #50                 ; recovery protection begins at the actual spawn
+    sta damage_cooldown
+    lda #1
+    sta respawn_pending
+    lda #0
+    sta respawn_render_row
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
+    jmp begin_level_load
 
 @game_over:
     lda joy_pressed
@@ -180,6 +236,62 @@ game_update:
     inc level_transitions
     rts
 
+@load_layout:
+    jsr level_layout_step
+    bne @done
+    lda #GAME_LOAD_A
+    sta game_state
+    rts
+
+@load_a:
+    lda respawn_pending
+    beq @load_a_full
+    lda #>SCREEN_A
+    jsr window_render_respawn_slice
+    lda respawn_render_row
+    bne @done
+    lda #GAME_LOAD_B
+    sta game_state
+    rts
+@load_a_full:
+    lda #>SCREEN_A
+    jsr window_render_target
+    lda #GAME_LOAD_B
+    sta game_state
+    rts
+
+@load_b:
+    lda respawn_pending
+    beq @load_b_full
+    lda #>SCREEN_B
+    jsr window_render_respawn_slice
+    lda respawn_render_row
+    bne @done
+    jmp @load_b_ready
+@load_b_full:
+    lda #>SCREEN_B
+    jsr window_render_target
+@load_b_ready:
+    lda #0
+    sta screen_a_char
+    sta screen_b_char
+    sta rendered_camera_char
+    sta visible_buffer
+    lda #$02
+    sta visible_d018
+    lda #$17
+    sta scroll_d016
+    lda respawn_pending
+    beq :+
+    lda #0
+    sta respawn_pending
+    jsr player_respawn      ; camera and both start buffers are ready first
+:
+    lda #GAME_LOAD_READY
+    sta game_state
+
+; Keep this handler beside @done so the two-byte conditional branch remains in
+; range without spending another byte in the completely full CODE window.
 @complete:
     lda joy_pressed
     and #JOY_FIRE
@@ -194,35 +306,6 @@ game_update:
     jsr objects_init
     jsr player_level_start
     jmp begin_level_patch
-
-@load_layout:
-    jsr level_layout_step
-    bne @done
-    lda #GAME_LOAD_A
-    sta game_state
-    rts
-
-@load_a:
-    lda #>SCREEN_A
-    jsr window_render_target
-    lda #GAME_LOAD_B
-    sta game_state
-    rts
-
-@load_b:
-    lda #>SCREEN_B
-    jsr window_render_target
-    lda #0
-    sta screen_a_char
-    sta screen_b_char
-    sta rendered_camera_char
-    sta visible_buffer
-    lda #$02
-    sta visible_d018
-    lda #$17
-    sta scroll_d016
-    lda #GAME_LOAD_READY
-    sta game_state
 @done:
     rts
 
@@ -311,22 +394,30 @@ player_damage:
     jsr sfx_damage
     inc player_deaths
     lda lives
-    beq @game_over_state
+    beq @last_life
     dec lives
-    beq @game_over_state
+    beq @last_life
     lda #50
     sta damage_cooldown
-    jsr player_respawn
-    rts
-@game_over_state:
+    jmp @begin_death
+@last_life:
     lda #9
     sta continue_seconds
     lda #50
     sta continue_tick
-    lda #GAME_CONTINUE
-    sta game_state
     inc game_over_count
     lda #0
     sta damage_cooldown
+@begin_death:
+    lda sprite_enable_shadow
+    and #$01                ; keep only the player for the impact flicker
+    sta sprite_enable_shadow
+    lda sprite_msb_shadow
+    and #$01
+    sta sprite_msb_shadow
+    lda #25                 ; half-second impact/flicker before camera travel
+    sta death_timer
+    lda #GAME_DEATH
+    sta game_state
 @done:
     rts
