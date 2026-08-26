@@ -203,8 +203,8 @@ for x in (11, 29, 48):
     world[1][x] = CABLE_V
 for x in (20, 40):
     world[3][x] = DRONE
-for x in (6, 21, 43):
-    world[9][x] = RUBBLE
+# Never place non-colliding rubble on the foot line: it looked like a blocking
+# object despite carrying decoration-only flags. The clear aisle is intentional.
 world[8][13] = TERMINAL
 world[3][16] = SIGNAL
 
@@ -513,6 +513,10 @@ OUT.mkdir(parents=True, exist_ok=True)
             "metatile_size_characters": [2, 2],
             "metatile_count": len(metatiles),
             "metatile_names": [name for name, _, _, _ in metatiles],
+            "affordance_revision": 1,
+            "solid_metatiles": ["aisle_floor", "aisle_marker", "chair_row", "hall_wall", "tech_gantry"],
+            "hazard_metatiles": ["cable_trap", "live_cable"],
+            "decoration_metatiles": [name for name, _, _, tile_flags in metatiles if tile_flags == DECORATION],
             "map_size_metatiles": [width, height],
             "map_size_characters": [width * 2, height * 2],
             "viewport_size_characters": [40, 24],

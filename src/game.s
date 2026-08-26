@@ -283,6 +283,12 @@ game_update:
     sta visible_d018
     lda #$17
     sta scroll_d016
+    lda respawn_pending
+    beq :+
+    lda #0
+    sta respawn_pending
+    jsr player_respawn      ; camera and both start buffers are ready first
+:
     lda #GAME_LOAD_READY
     sta game_state
 @done:

@@ -24,6 +24,11 @@ make validate-assets # verify charset, metatiles, colors, flags and map
 make clean
 ```
 
+Packed C64 assets are regenerated from `tools/build_c64_assets.py` through one
+build stamp. Pull requests therefore only need to carry the text generator change;
+`make build`, `make test`, `make soak`, and `make validate-assets` recreate the
+derived binary files before consuming them.
+
 The debug build visualizes main-loop work in the border. The release build removes those writes at assembly time. Joystick port 2 is sampled once per video frame; opposite directions resolve to neutral.
 
 The soundtrack is Jesper Jensen's `Madness (part 1)` (1988 Noise), used with permission reported by the project owner. Full attribution and import details are in [docs/CREDITS.md](docs/CREDITS.md).

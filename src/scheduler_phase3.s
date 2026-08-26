@@ -1262,7 +1262,39 @@ autotest_damage_cycle:
     sta game_over_count
     lda #3
     sta lives
+    lda #$40
+    sta camera_pixel_lo
+    lda #1
+    sta camera_pixel_hi
+    lda #$20
+    sta player_x_lo
+    lda #$20
+    sta player_x_hi
     jsr player_damage
+    lda game_state
+    cmp #GAME_LOAD_A
+    bne @respawn_fail
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    bne @respawn_fail
+    lda respawn_pending
+    cmp #1
+    bne @respawn_fail
+    lda player_x_hi
+    cmp #$20                ; player is not moved before the camera reset
+    bne @respawn_fail
+    jsr game_update         ; rebuild Screen A at camera zero
+    jsr game_update         ; rebuild Screen B, then place the player
+    lda respawn_pending
+    bne @respawn_fail
+    lda player_x_hi
+    cmp #$04
+    bne @respawn_fail
+    lda game_state
+    cmp #GAME_LOAD_READY
+    bne @respawn_fail
+    lda #GAME_PLAY
+    sta game_state
     lda #0
     sta death_timer
     sta camera_pixel_lo
@@ -1285,6 +1317,12 @@ autotest_damage_cycle:
     sta camera_pixel_hi
     jsr game_update
     rts
+@respawn_fail:
+    lda #$8C
+    sta test_fail_code
+    sta $D7FF
+@respawn_halt:
+    jmp @respawn_halt
 
 autotest_level_exit:
     lda #$00

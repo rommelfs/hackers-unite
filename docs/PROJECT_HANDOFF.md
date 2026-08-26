@@ -50,6 +50,13 @@ AUTOTEST bypasses it, and the live item field identifies `FOYER`, `HACKLU`, or
 The expanded hotel and conference route manifest is not implemented. Runtime
 gameplay beneath the narrative shell remains the Phase-11 three-layout foundation.
 
+The latest Phase-12 readability pass gives every landable elevated metatile a
+continuous bright lip and full-height supports, makes walls closed and cross-braced,
+and removes non-colliding fallen-chair decoration from the foot line. The asset
+manifest and validator enforce explicit solid/hazard/decoration groups. Damage
+recovery now freezes gameplay, resets the camera, rebuilds Screen A and Screen B at
+the section start, and only then places and republishes the player spawn.
+
 Phases 1-11 are implemented.
 
 ### Runtime foundation
