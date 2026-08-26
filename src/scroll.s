@@ -1,6 +1,7 @@
 .include "constants.inc"
 
-.export scroll_init, scroll_update, window_render_target, mutable_patch_refresh
+.export scroll_init, scroll_update, scroll_return_update
+.export window_render_target, window_render_respawn_slice, mutable_patch_refresh
 .import world_chars, row_colors
 .import joy_held
 .importzp screen_ptr, color_ptr, source_ptr
@@ -11,6 +12,7 @@
 .import scroll_direction, coarse_scroll_count
 .import player_x_lo, player_x_hi, player_pixel_lo, player_pixel_hi
 .import mutable_block_state
+.import respawn_render_row, death_timer
 
 .segment "CODE"
 scroll_init:
@@ -40,7 +42,7 @@ scroll_init:
 scroll_update:
 .ifdef PHASE4_BUILD
     jsr camera_follow
-    jmp @publish
+    jmp scroll_publish
 .else
 .ifdef AUTOTEST
     lda scroll_direction
@@ -48,18 +50,18 @@ scroll_update:
     jsr camera_right
     lda camera_pixel_hi
     cmp #$02
-    bne @publish
+    bne scroll_publish
     lda camera_pixel_lo
     cmp #$C0
-    bne @publish
+    bne scroll_publish
     lda #0
     sta scroll_direction
-    jmp @publish
+    jmp scroll_publish
 @auto_left:
     jsr camera_left
     lda camera_pixel_lo
     ora camera_pixel_hi
-    bne @publish
+    bne scroll_publish
     lda #1
     sta scroll_direction
 .else
@@ -70,12 +72,12 @@ scroll_update:
 :
     lda joy_held
     and #JOY_LEFT
-    beq @publish
+    beq scroll_publish
     jsr camera_left
 .endif
 .endif
 
-@publish:
+scroll_publish:
     lda camera_pixel_lo
     and #$07
     eor #$07
@@ -102,6 +104,18 @@ scroll_update:
     rts
 
 .ifdef PHASE4_BUILD
+; Death return is presentation, not simulation: move the existing camera two
+; pixels per logical frame and reuse the bounded Screen A/B scroll publisher.
+scroll_return_update:
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    beq @return_done
+    jsr camera_left
+    jsr camera_left
+    jmp scroll_publish
+@return_done:
+    rts
+
 camera_follow:
     lda player_x_lo
     lsr
@@ -467,9 +481,87 @@ window_render_target:
     jsr render_mutable_block
     rts
 
+; A = target screen high byte. Rebuild eight rows at camera zero per frozen
+; respawn frame. Three calls complete one buffer without approaching the PAL
+; deadline that a full 960-cell rebuild plus SID/UI work can exceed.
+.segment "CODE3"
+window_render_respawn_slice:
+    sta tile_col
+    sta screen_ptr+1
+    lda #0
+    sta screen_ptr
+    lda #<world_chars
+    sta source_ptr
+    lda #>world_chars
+    sta source_ptr+1
+    lda respawn_render_row
+    beq @slice_ready
+    cmp #8
+    bne @slice_16
+    lda #$40                ; screen row 8 = offset $0140
+    sta screen_ptr
+    inc screen_ptr+1
+    lda source_ptr+1        ; world row 8 = offset $0400
+    clc
+    adc #4
+    sta source_ptr+1
+    jmp @slice_ready
+@slice_16:
+    lda #$80                ; screen row 16 = offset $0280
+    sta screen_ptr
+    inc screen_ptr+1
+    inc screen_ptr+1
+    lda source_ptr+1        ; world row 16 = offset $0800
+    clc
+    adc #8
+    sta source_ptr+1
+@slice_ready:
+    lda #8
+    sta tile_row
+@slice_row:
+    ldy #0
+@slice_copy:
+    lda (source_ptr),y
+    sta (screen_ptr),y
+    iny
+    cpy #40
+    bne @slice_copy
+    lda source_ptr
+    clc
+    adc #128
+    sta source_ptr
+    bcc :+
+    inc source_ptr+1
+:
+    lda screen_ptr
+    clc
+    adc #40
+    sta screen_ptr
+    bcc :+
+    inc screen_ptr+1
+:
+    dec tile_row
+    bne @slice_row
+    lda respawn_render_row
+    clc
+    adc #8
+    cmp #24
+    bcc @store_row
+    lda #0
+    sta respawn_render_row
+    sta tile_map_index       ; camera character column zero
+    jsr render_mutable_block
+    rts
+@store_row:
+    sta respawn_render_row
+    rts
+
 ; Overlay the authoritative Phase-5 map patch at metatile (10,8).
 ; The immutable expanded world below it is empty. A state change refreshes these
-; four cells in both buffers immediately, without forcing a full rebuild.
+; four cells in both buffers immediately, without forcing a full rebuild. Keep
+; this renderer helper with the sliced renderer in CODE3: both rendering paths
+; call it, and moving it out of the saturated primary CODE window restores
+; linker headroom without changing steady-state behavior or memory ownership.
 render_mutable_block:
     lda tile_map_index
     cmp #21
@@ -522,6 +614,8 @@ render_mutable_block:
     sta (screen_ptr),y
 @done:
     rts
+
+.segment "CODE"
 
 ; Refresh the four patch cells in both buffers without a 960-byte rebuild.
 mutable_patch_refresh:
