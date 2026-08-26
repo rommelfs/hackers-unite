@@ -76,13 +76,21 @@ game_update:
     rts
 :
     cmp #GAME_OVER
-    beq @game_over
+    bne :+
+    jmp @game_over
+:
     cmp #GAME_CONTINUE
-    beq @continue
+    bne :+
+    jmp @continue
+:
     cmp #GAME_BRIEFING
-    beq @briefing
+    bne :+
+    jmp @briefing
+:
     cmp #GAME_LEVEL_CLEAR
-    beq @level_clear
+    bne :+
+    jmp @level_clear
+:
     cmp #GAME_COMPLETE
     bne :+
     jmp @complete
