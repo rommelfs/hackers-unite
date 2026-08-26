@@ -1,6 +1,8 @@
 # Hackers Unite
 
-Native C64 platform game, built from scratch with ca65/ld65. The current milestone is **Phase 11: a three-world endless run with classic action hazards and boss projectiles**.
+Native C64 platform game, built from scratch with ca65/ld65. The current milestone
+is **Phase 12: a hack.lu 2026 briefing and location-aware vertical-slice HUD on top
+of the Phase-11 gameplay foundation**.
 
 ## Requirements
 
@@ -76,5 +78,7 @@ Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of
 - exact 28x17-pixel boss weak-core window; blind floor-height shots miss
 - high and descending ballistic bombs with dedicated artwork
 - full-height 16-pixel spike and electrical warning silhouettes
+- cold-boot `HACK.LU 2026` mission briefing with a staged transition into gameplay
+- `FOYER`/`HACKLU`/`STAGE` objective labels for the current three-layout slice
 
-See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_11_REPORT.md](docs/PHASE_11_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
+See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
