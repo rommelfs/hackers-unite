@@ -51,6 +51,8 @@ if manifest.get("campaign_sections") != ["foyer", "auditorium", "stage_rig"]:
     errors.append("Phase-12 campaign section order is invalid")
 if manifest.get("final_goal") != "speaker_stage":
     errors.append("Phase-12 final goal must be the speaker stage")
+if manifest.get("affordance_revision") != 1:
+    errors.append("asset manifest lacks the solid/hazard affordance revision")
 if any(color < 8 or color > 15 for color in row_colors):
     errors.append("playfield row colors must select multicolor mode")
 if not (0 <= exit_left < exit_right <= map_width * 16):
@@ -137,6 +139,34 @@ if sum(tile in chair_indices for tile in tilemap) < 80:
 chair_row_index = manifest["metatile_names"].index("chair_row")
 if flags[chair_row_index] != 1:
     errors.append("foreground chair rows must be unambiguously solid")
+tech_gantry_index = manifest["metatile_names"].index("tech_gantry")
+hall_wall_index = manifest["metatile_names"].index("hall_wall")
+for name in manifest.get("solid_metatiles", []):
+    index = manifest["metatile_names"].index(name)
+    if flags[index] != 1:
+        errors.append(f"declared solid metatile {name} lacks the exclusive SOLID flag")
+    if not all(chars[index * 4 + cell] for cell in range(4)):
+        errors.append(f"declared solid metatile {name} has a visually open cell")
+for index in (chair_row_index, tech_gantry_index, hall_wall_index):
+    glyph_bytes = b"".join(
+        charset[chars[index * 4 + cell] * 8 : chars[index * 4 + cell] * 8 + 8]
+        for cell in range(4)
+    )
+    if any(((byte >> shift) & 3) == 0 for byte in glyph_bytes for shift in (0, 2, 4, 6)):
+        errors.append("load-bearing metatile contains a visually open pixel")
+for name in manifest.get("hazard_metatiles", []):
+    index = manifest["metatile_names"].index(name)
+    if flags[index] != 2:
+        errors.append(f"declared hazard metatile {name} must be hazardous and non-solid")
+for name in manifest.get("decoration_metatiles", []):
+    index = manifest["metatile_names"].index(name)
+    if flags[index] & 3:
+        errors.append(f"declared decoration metatile {name} affects collision")
+rubble_index = manifest["metatile_names"].index("fallen_chair")
+for layout_name, layout in (("foyer", tilemap), ("auditorium", level2_map), ("stage", level3_map)):
+    foot_row = layout[9 * map_width : 10 * map_width]
+    if rubble_index in foot_row:
+        errors.append(f"{layout_name} places non-colliding rubble on the player foot line")
 if flags[portal_index] & 3 or flags[vortex_index] & 3:
     errors.append("stage frame and screen must remain decorative/non-solid")
 for section_name, layout_map in (

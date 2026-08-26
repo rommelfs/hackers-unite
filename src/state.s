@@ -40,6 +40,7 @@
 .export falling_drops, rolling_cycles, action_hits
 .export continue_seconds, continue_tick, continues_used, continue_timeouts
 .export falling_warning_timer
+.export respawn_pending
 
 .segment "ZEROPAGE"
 frame_pending:  .res 1
@@ -173,3 +174,4 @@ continue_tick:      .res 1
 continues_used:     .res 1
 continue_timeouts:  .res 1
 falling_warning_timer: .res 1
+respawn_pending:       .res 1

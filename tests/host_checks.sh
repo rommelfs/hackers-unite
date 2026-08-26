@@ -10,6 +10,7 @@ load_hex=$(od -An -tx1 -N2 "$prg" | tr -d ' \n')
 test "$load_hex" = "0108"
 rg -q 'raster_irq' release/hackers-unite.lbl
 rg -q 'vic_init' release/hackers-unite.lbl
+rg -q 'presentation_init' release/hackers-unite.lbl
 rg -q 'charset_data' release/hackers-unite.lbl
 rg -q 'tilemap_render' release/hackers-unite.lbl
 rg -q 'scroll_update' release/hackers-unite.lbl
@@ -39,6 +40,7 @@ rg -q 'falling_drops' release/hackers-unite.lbl
 rg -q 'continues_used' release/hackers-unite.lbl
 rg -q 'falling_warning_timer' release/hackers-unite.lbl
 rg -q 'player_stance' release/hackers-unite.lbl
+rg -q 'respawn_pending' release/hackers-unite.lbl
 rg -q 'al 001800 .sid_tune_data' release/hackers-unite.lbl
 rg -q '^CODE[[:space:]]+006000' "$map"
 rg -q '^RODATA[[:space:]]+008000' "$map"
