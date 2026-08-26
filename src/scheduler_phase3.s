@@ -2,7 +2,7 @@
 
 .export frame_loop
 .importzp frame_pending
-.import input_update, player_update, scroll_update, player_sprite_update, ui_update
+.import input_update, player_update, scroll_update, scroll_return_update, player_sprite_update, ui_update
 .import game_update, level_exit_update, objects_update, game_state
 .import frame_counter_lo, frame_counter_hi, dropped_frames, coarse_scroll_count
 .import collision_landings
@@ -38,7 +38,7 @@
 .import boss_shot_active, boss_shots_fired, boss_shot_hits
 .import falling_drops, rolling_cycles, action_hits, falling_warning_timer
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
-.import respawn_pending
+.import death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
 
@@ -75,9 +75,15 @@ frame_loop:
     sta VIC_BORDER
 .endif
     lda game_state
+    cmp #GAME_DEATH
+    beq @death_world
     cmp #GAME_LOAD_A
     bcs @skip_world
     jsr scroll_update
+    jmp @world_objects
+@death_world:
+    jsr scroll_return_update
+@world_objects:
 .ifdef DEBUG_BUILD
     lda #COLOR_RED
     sta VIC_BORDER
@@ -1290,11 +1296,26 @@ autotest_damage_cycle:
     lda #GAME_PLAY
     sta game_state
     lda #0
-    sta damage_cooldown
-    jsr player_damage
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
     lda #0
     sta damage_cooldown
     jsr player_damage
+    lda #0
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
+    lda #0
+    sta damage_cooldown
+    jsr player_damage
+    lda #0
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
     rts
 @respawn_fail:
     lda #$8C

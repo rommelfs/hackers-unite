@@ -125,25 +125,10 @@ glyphs = {
     97: mc("0000", "0000", "0000", "2000", "2200", "1200", "1120", "1122"),
     98: mc("0020", "0200", "0220", "0020", "0210", "2100", "2200", "0200"),
     99: mc("0200", "0020", "0220", "0200", "0120", "0012", "0022", "0020"),
-    # Safe, load-bearing geometry uses an unbroken bright lip and visible
-    # supports through the complete 16-pixel metatile. Background chairs never
-    # use this silhouette, so landing surfaces read before their collision box.
-    100: mc("3333", "3333", "1111", "1311", "1311", "1311", "1311", "1311"),
-    101: mc("3333", "3333", "1111", "1131", "1131", "1131", "1131", "1131"),
-    102: mc("1311", "1311", "1311", "1311", "1311", "1111", "3333", "3333"),
-    103: mc("1131", "1131", "1131", "1131", "1131", "1111", "3333", "3333"),
-    # Stage-rig platforms share the same solid outline but add diagonal warning
-    # braces. The outline, rather than the warning color, communicates solidity.
-    104: mc("3333", "3333", "1111", "1122", "1112", "1121", "1112", "1121"),
-    105: mc("3333", "3333", "1111", "2211", "2111", "1211", "2111", "1211"),
-    106: mc("1121", "1112", "1121", "1112", "1121", "1111", "3333", "3333"),
-    107: mc("1211", "2111", "1211", "2111", "1211", "1111", "3333", "3333"),
-    # Full-height blocking wall: closed border and cross-brace, with no open
-    # bottom that could suggest a crawl-through decoration.
-    108: mc("3333", "3111", "3131", "3113", "3131", "3111", "3131", "3333"),
-    109: mc("3333", "1113", "1313", "3113", "1313", "1113", "1313", "3333"),
-    110: mc("3333", "3131", "3111", "3131", "3113", "3131", "3111", "3333"),
-    111: mc("3333", "1313", "1113", "1313", "3113", "1313", "1113", "3333"),
+    # Bright load-bearing undersides make traversable ledges unmistakable and
+    # visually separate them from the dark decorative chair banks.
+    100: mc("3333", "3111", "3121", "3121", "3121", "3121", "3111", "3333"),
+    101: mc("3333", "1113", "1213", "1213", "1213", "1213", "1113", "3333"),
 }
 for index, data in glyphs.items():
     charset[index] = data
@@ -171,8 +156,8 @@ CABLE_V = tile("hanging_cable", [72, 0, 72, 0], [11, 0, 11, 0], DECORATION)
 CABLE_CORNER = tile("light_corner", [73, 71, 0, 0], [11, 11, 0, 0], DECORATION)
 FLOOR = tile("aisle_floor", [67, 67, 68, 68], [13, 13, 11, 11], SOLID)
 FLOOR_CRACK = tile("aisle_marker", [67, 67, 66, 68], [13, 13, 11, 11], SOLID)
-PLATFORM = tile("chair_row", [100, 101, 102, 103], [13, 13, 13, 13], SOLID)
-WALL = tile("hall_wall", [108, 109, 110, 111], [11, 11, 11, 11], SOLID)
+PLATFORM = tile("chair_row", [86, 86, 100, 101], [13, 13, 13, 13], SOLID)
+WALL = tile("hall_wall", [65, 66, 66, 65], [11, 11, 11, 11], SOLID)
 PORTAL_BLOCK = tile("stage_frame", [74, 75, 76, 77], [9, 9, 11, 11], DECORATION)
 TWO_TOP = tile("banner_top", [76, 75, 74, 65], [9, 9, 9, 11], DECORATION)
 TWO_MID = tile("banner_mid", [65, 74, 74, 65], [11, 9, 9, 11], DECORATION)
@@ -195,7 +180,7 @@ SPIKE_TRAP = tile("cable_trap", [96, 97, 88, 89], [10, 10, 10, 10], HAZARD)
 ELECTRIC_TRAP = tile("live_cable", [98, 99, 94, 95], [15, 15, 15, 15], HAZARD)
 FACTORY_PANEL = tile("tech_panel", [92, 93, 93, 92], [11, 11, 11, 11], DECORATION)
 DROP_WARNING = tile("rig_warning", [90, 91, 91, 90], [10, 10, 10, 10], DECORATION)
-FACTORY_PLATFORM = tile("tech_gantry", [104, 105, 106, 107], [10, 10, 10, 10], SOLID)
+FACTORY_PLATFORM = tile("tech_gantry", [90, 91, 100, 101], [10, 10, 10, 10], SOLID)
 
 width, height = 64, 12
 world = [[EMPTY for _ in range(width)] for _ in range(height)]

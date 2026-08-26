@@ -1,6 +1,6 @@
 .include "constants.inc"
 
-.export scroll_init, scroll_update, window_render_target, mutable_patch_refresh
+.export scroll_init, scroll_update, scroll_return_update, window_render_target, mutable_patch_refresh
 .import world_chars, row_colors
 .import joy_held
 .importzp screen_ptr, color_ptr, source_ptr
@@ -11,6 +11,7 @@
 .import scroll_direction, coarse_scroll_count
 .import player_x_lo, player_x_hi, player_pixel_lo, player_pixel_hi
 .import mutable_block_state
+.import death_timer
 
 .segment "CODE"
 scroll_init:
@@ -40,7 +41,7 @@ scroll_init:
 scroll_update:
 .ifdef PHASE4_BUILD
     jsr camera_follow
-    jmp @publish
+    jmp scroll_publish
 .else
 .ifdef AUTOTEST
     lda scroll_direction
@@ -48,18 +49,18 @@ scroll_update:
     jsr camera_right
     lda camera_pixel_hi
     cmp #$02
-    bne @publish
+    bne scroll_publish
     lda camera_pixel_lo
     cmp #$C0
-    bne @publish
+    bne scroll_publish
     lda #0
     sta scroll_direction
-    jmp @publish
+    jmp scroll_publish
 @auto_left:
     jsr camera_left
     lda camera_pixel_lo
     ora camera_pixel_hi
-    bne @publish
+    bne scroll_publish
     lda #1
     sta scroll_direction
 .else
@@ -70,12 +71,12 @@ scroll_update:
 :
     lda joy_held
     and #JOY_LEFT
-    beq @publish
+    beq scroll_publish
     jsr camera_left
 .endif
 .endif
 
-@publish:
+scroll_publish:
     lda camera_pixel_lo
     and #$07
     eor #$07
@@ -99,6 +100,17 @@ scroll_update:
     beq @done
     jsr coarse_rebuild
 @done:
+    rts
+
+; Death return is presentation, not simulation: move the existing camera two
+; pixels per logical frame and reuse the normal bounded Screen A/B publisher.
+scroll_return_update:
+    lda death_timer
+    bne @return_done
+    jsr camera_left
+    jsr camera_left
+    jmp scroll_publish
+@return_done:
     rts
 
 .ifdef PHASE4_BUILD
