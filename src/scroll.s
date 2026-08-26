@@ -114,6 +114,9 @@ scroll_return_update:
     rts
 
 .ifdef PHASE4_BUILD
+; Respawn/death recovery never enters camera_follow: game_state freezes world
+; updates and respawn_pending drives the sliced camera-zero rebuild in CODE3.
+; A death_timer reference here is a stale partial-merge artifact, not runtime state.
 camera_follow:
     lda player_x_lo
     lsr

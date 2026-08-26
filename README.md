@@ -21,6 +21,7 @@ make disk    # release/hackers-unite.d64
 make preview # build a Level-3 visual-inspection PRG
 make assets  # regenerate C64 previews and motif crops
 make validate-assets # verify charset, metatiles, colors, flags and map
+make validate-source # reject conflict markers and partial Phase-13 merges
 make clean
 ```
 
