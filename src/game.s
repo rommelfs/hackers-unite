@@ -78,6 +78,10 @@ game_update:
     bne :+
     rts
 :
+    cmp #GAME_DEATH
+    bne :+
+    jmp @death
+:
     cmp #GAME_OVER
     bne :+
     jmp @game_over
@@ -359,7 +363,7 @@ player_damage:
     jsr sfx_damage
     inc player_deaths
     lda lives
-    beq @game_over_state
+    beq @begin_death
     dec lives
     beq @game_over_state
     lda #50
@@ -381,7 +385,10 @@ player_damage:
     lda #GAME_CONTINUE
     sta game_state
     inc game_over_count
-    lda #0
-    sta damage_cooldown
+@begin_death:
+    lda #25                 ; half-second impact/flicker before camera travel
+    sta death_timer
+    lda #GAME_DEATH
+    sta game_state
 @done:
     rts
