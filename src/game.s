@@ -12,10 +12,11 @@
 .import boss_defeats, boss_hits, trap_hits, secret_found
 .import falling_drops, rolling_cycles, action_hits
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
+.import respawn_pending, respawn_render_row, sprite_enable_shadow, sprite_msb_shadow
 .import camera_pixel_lo, camera_pixel_hi, camera_char
 .import rendered_camera_char, screen_a_char, screen_b_char
 .import visible_buffer, visible_d018, scroll_d016
-.import window_render_target
+.import window_render_target, window_render_respawn_slice
 .import level_layout_apply, level_layout_begin, level_layout_step
 .import sfx_damage, sfx_level_clear
 
@@ -47,6 +48,8 @@ game_init:
     sta continue_tick
     sta continues_used
     sta continue_timeouts
+    sta respawn_pending
+    sta respawn_render_row
 .ifdef PHASE12_PREVIEW
     lda #3
 .else
@@ -76,11 +79,21 @@ game_update:
     rts
 :
     cmp #GAME_OVER
-    beq @game_over
+    bne :+
+    jmp @game_over
+:
     cmp #GAME_CONTINUE
-    beq @continue
+    bne :+
+    jmp @continue
+:
+    cmp #GAME_BRIEFING
+    bne :+
+    jmp @briefing
+:
     cmp #GAME_LEVEL_CLEAR
-    beq @level_clear
+    bne :+
+    jmp @level_clear
+:
     cmp #GAME_COMPLETE
     bne :+
     jmp @complete
@@ -101,6 +114,16 @@ game_update:
     lda #GAME_PLAY
     sta game_state
     rts
+
+@briefing:
+    lda joy_pressed
+    and #JOY_FIRE
+    bne :+
+    rts
+:
+    jsr player_level_start
+    jsr objects_init
+    jmp begin_level_load
 
 @game_over:
     lda joy_pressed
@@ -203,6 +226,16 @@ game_update:
     rts
 
 @load_a:
+    lda respawn_pending
+    beq @load_a_full
+    lda #>SCREEN_A
+    jsr window_render_respawn_slice
+    lda respawn_render_row
+    bne @done
+    lda #GAME_LOAD_B
+    sta game_state
+    rts
+@load_a_full:
     lda #>SCREEN_A
     jsr window_render_target
     lda #GAME_LOAD_B
@@ -210,8 +243,17 @@ game_update:
     rts
 
 @load_b:
+    lda respawn_pending
+    beq @load_b_full
+    lda #>SCREEN_B
+    jsr window_render_respawn_slice
+    lda respawn_render_row
+    bne @done
+    jmp @load_b_ready
+@load_b_full:
     lda #>SCREEN_B
     jsr window_render_target
+@load_b_ready:
     lda #0
     sta screen_a_char
     sta screen_b_char
@@ -221,6 +263,12 @@ game_update:
     sta visible_d018
     lda #$17
     sta scroll_d016
+    lda respawn_pending
+    beq :+
+    lda #0
+    sta respawn_pending
+    jsr player_respawn      ; camera and both start buffers are ready first
+:
     lda #GAME_LOAD_READY
     sta game_state
 @done:
@@ -316,9 +364,16 @@ player_damage:
     beq @game_over_state
     lda #50
     sta damage_cooldown
-    jsr player_respawn
-    rts
+    lda #1
+    sta respawn_pending
+    lda #0                  ; do not publish the old position during the rebuild
+    sta respawn_render_row
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
+    jmp begin_level_load    ; reset camera now; spawn after Screen A/B are ready
 @game_over_state:
+    lda #0
+    sta respawn_pending
     lda #9
     sta continue_seconds
     lda #50

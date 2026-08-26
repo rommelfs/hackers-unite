@@ -1,6 +1,6 @@
 .include "constants.inc"
 
-.export scroll_init, scroll_update, window_render_target, mutable_patch_refresh
+.export scroll_init, scroll_update, window_render_target, window_render_respawn_slice, mutable_patch_refresh
 .import world_chars, row_colors
 .import joy_held
 .importzp screen_ptr, color_ptr, source_ptr
@@ -11,6 +11,7 @@
 .import scroll_direction, coarse_scroll_count
 .import player_x_lo, player_x_hi, player_pixel_lo, player_pixel_hi
 .import mutable_block_state
+.import respawn_render_row
 
 .segment "CODE"
 scroll_init:
@@ -465,6 +466,80 @@ window_render_target:
     lda camera_char
     sta tile_map_index
     jsr render_mutable_block
+    rts
+
+; A = target screen high byte. Rebuild eight rows at camera zero per frozen
+; respawn frame. Three calls complete one buffer without approaching the PAL
+; deadline that a full 960-cell rebuild plus SID/UI work can exceed.
+window_render_respawn_slice:
+    sta tile_col
+    sta screen_ptr+1
+    lda #0
+    sta screen_ptr
+    lda #<world_chars
+    sta source_ptr
+    lda #>world_chars
+    sta source_ptr+1
+    lda respawn_render_row
+    beq @slice_ready
+    cmp #8
+    bne @slice_16
+    lda #$40                ; screen row 8 = offset $0140
+    sta screen_ptr
+    inc screen_ptr+1
+    lda source_ptr+1        ; world row 8 = offset $0400
+    clc
+    adc #4
+    sta source_ptr+1
+    jmp @slice_ready
+@slice_16:
+    lda #$80                ; screen row 16 = offset $0280
+    sta screen_ptr
+    inc screen_ptr+1
+    inc screen_ptr+1
+    lda source_ptr+1        ; world row 16 = offset $0800
+    clc
+    adc #8
+    sta source_ptr+1
+@slice_ready:
+    lda #8
+    sta tile_row
+@slice_row:
+    ldy #0
+@slice_copy:
+    lda (source_ptr),y
+    sta (screen_ptr),y
+    iny
+    cpy #40
+    bne @slice_copy
+    lda source_ptr
+    clc
+    adc #128
+    sta source_ptr
+    bcc :+
+    inc source_ptr+1
+:
+    lda screen_ptr
+    clc
+    adc #40
+    sta screen_ptr
+    bcc :+
+    inc screen_ptr+1
+:
+    dec tile_row
+    bne @slice_row
+    lda respawn_render_row
+    clc
+    adc #8
+    cmp #24
+    bcc @store_row
+    lda #0
+    sta respawn_render_row
+    sta tile_map_index       ; camera character column zero
+    jsr render_mutable_block
+    rts
+@store_row:
+    sta respawn_render_row
     rts
 
 ; Overlay the authoritative Phase-5 map patch at metatile (10,8).
