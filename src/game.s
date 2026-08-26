@@ -236,21 +236,6 @@ game_update:
     inc level_transitions
     rts
 
-@complete:
-    lda joy_pressed
-    and #JOY_FIRE
-    beq @done
-    lda #1
-    sta level_number
-    inc level_transitions
-    lda #0
-    sta mutable_block_state
-    jsr apply_level_palette
-    jsr level_layout_begin
-    jsr objects_init
-    jsr player_level_start
-    jmp begin_level_patch
-
 @load_layout:
     jsr level_layout_step
     bne @done
@@ -304,6 +289,23 @@ game_update:
 :
     lda #GAME_LOAD_READY
     sta game_state
+
+; Keep this handler beside @done so the two-byte conditional branch remains in
+; range without spending another byte in the completely full CODE window.
+@complete:
+    lda joy_pressed
+    and #JOY_FIRE
+    beq @done
+    lda #1
+    sta level_number
+    inc level_transitions
+    lda #0
+    sta mutable_block_state
+    jsr apply_level_palette
+    jsr level_layout_begin
+    jsr objects_init
+    jsr player_level_start
+    jmp begin_level_patch
 @done:
     rts
 
