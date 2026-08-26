@@ -139,7 +139,7 @@ objects_init:
     lda #3                  ; later Level-1 cycles add the flying patrol
     bne @store_enemy_count
 :
-    lda #3                  ; foyer now introduces two walkers and one drone
+    lda #2
 @store_enemy_count:
     sta enemies_present
     rts
@@ -233,7 +233,7 @@ object_activate:
     bcc :+
     jmp @inactive
 @level1_base:
-    cpx #6                  ; IDs 0/4 plus the late-route drone are present.
+    cpx #5
     bcc :+
     jmp @inactive
 :

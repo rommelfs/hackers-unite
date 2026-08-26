@@ -1,6 +1,7 @@
 .include "constants.inc"
 
-.export scroll_init, scroll_update, window_render_target, window_render_respawn_slice, mutable_patch_refresh
+.export scroll_init, scroll_update, scroll_return_update
+.export window_render_target, window_render_respawn_slice, mutable_patch_refresh
 .import world_chars, row_colors
 .import joy_held
 .importzp screen_ptr, color_ptr, source_ptr
@@ -11,7 +12,7 @@
 .import scroll_direction, coarse_scroll_count
 .import player_x_lo, player_x_hi, player_pixel_lo, player_pixel_hi
 .import mutable_block_state
-.import respawn_render_row
+.import respawn_render_row, death_timer
 
 .segment "CODE"
 scroll_init:
@@ -102,21 +103,19 @@ scroll_publish:
 @done:
     rts
 
+.ifdef PHASE4_BUILD
 ; Death return is presentation, not simulation: move the existing camera two
-; pixels per logical frame and reuse the normal bounded Screen A/B publisher.
+; pixels per logical frame and reuse the bounded Screen A/B scroll publisher.
 scroll_return_update:
-    lda death_timer
-    bne @return_done
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    beq @return_done
     jsr camera_left
     jsr camera_left
     jmp scroll_publish
 @return_done:
     rts
 
-.ifdef PHASE4_BUILD
-; Respawn/death recovery never enters camera_follow: game_state freezes world
-; updates and respawn_pending drives the sliced camera-zero rebuild in CODE3.
-; A death_timer reference here is a stale partial-merge artifact, not runtime state.
 camera_follow:
     lda player_x_lo
     lsr

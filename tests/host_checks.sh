@@ -42,6 +42,7 @@ rg -q 'falling_warning_timer' release/hackers-unite.lbl
 rg -q 'player_stance' release/hackers-unite.lbl
 rg -q 'respawn_pending' release/hackers-unite.lbl
 rg -q 'respawn_render_row' release/hackers-unite.lbl
+rg -q 'death_timer' release/hackers-unite.lbl
 rg -q 'al 001800 .sid_tune_data' release/hackers-unite.lbl
 rg -q '^CODE[[:space:]]+006000' "$map"
 rg -q '^CODE2[[:space:]]+005500' "$map"
