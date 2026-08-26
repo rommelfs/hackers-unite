@@ -10,7 +10,8 @@ death recovery to reset the camera before republishing the player.
   half-second impact flicker before the camera returns toward the section origin.
 - Screen A and Screen B are rebuilt in eight-row slices. The player is placed at
   spawn only after both buffers are coherent at camera zero.
-- The slice routine lives in the dedicated linker segment `CODE3` at `$5800`,
+- The slice routine and its shared mutable-block overlay helper live in the
+  dedicated linker segment `CODE3` at `$5800`,
   preserving the projectile window at `$5500-$5754` and primary-code headroom at
   `$6000`.
 - The HUD chooses its location string once per frame and copies it through a single

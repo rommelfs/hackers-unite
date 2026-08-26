@@ -556,11 +556,12 @@ window_render_respawn_slice:
     sta respawn_render_row
     rts
 
-.segment "CODE"
-
 ; Overlay the authoritative Phase-5 map patch at metatile (10,8).
 ; The immutable expanded world below it is empty. A state change refreshes these
-; four cells in both buffers immediately, without forcing a full rebuild.
+; four cells in both buffers immediately, without forcing a full rebuild. Keep
+; this renderer helper with the sliced renderer in CODE3: both rendering paths
+; call it, and moving it out of the saturated primary CODE window restores
+; linker headroom without changing steady-state behavior or memory ownership.
 render_mutable_block:
     lda tile_map_index
     cmp #21
@@ -613,6 +614,8 @@ render_mutable_block:
     sta (screen_ptr),y
 @done:
     rts
+
+.segment "CODE"
 
 ; Refresh the four patch cells in both buffers without a 960-byte rebuild.
 mutable_patch_refresh:

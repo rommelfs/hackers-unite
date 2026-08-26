@@ -21,7 +21,7 @@
 | `$5280-$52FF`, `$5380-$53FF` | Free sprite RAM | available with explicit ownership |
 | `$5500-$5754` | Secondary game code | bounded straight-shot and ballistic-bomb lifecycle |
 | `$5755-$57FF` | Free VIC-bank RAM | 171 bytes between secondary code windows |
-| `$5800-$5FFF` | Respawn renderer code window | eight-row Screen A/B rebuild slices; no VIC pointer targets this range |
+| `$5800-$5FFF` | Secondary renderer code window | eight-row Screen A/B rebuild slices and their mutable-block overlay helper; no VIC pointer targets this range |
 | `$6000-$7E2E` | Primary game code | gameplay, rendering, IRQ, Continue state, staged layout loader, sound bridge and support routines |
 | `$7DDE-$7FFF` | Free primary-code RAM | 546 bytes |
 | `$8000-$A200` | Read-only game data | charset source, three-layout table, maps, UI strings and packed sprite sources |
