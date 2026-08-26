@@ -12,6 +12,7 @@
 .import boss_defeats, boss_hits, trap_hits, secret_found
 .import falling_drops, rolling_cycles, action_hits
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
+.import respawn_pending, sprite_enable_shadow, sprite_msb_shadow
 .import camera_pixel_lo, camera_pixel_hi, camera_char
 .import rendered_camera_char, screen_a_char, screen_b_char
 .import visible_buffer, visible_d018, scroll_d016
@@ -47,6 +48,7 @@ game_init:
     sta continue_tick
     sta continues_used
     sta continue_timeouts
+    sta respawn_pending
 .ifdef PHASE12_PREVIEW
     lda #3
 .else
@@ -241,6 +243,12 @@ game_update:
     sta visible_d018
     lda #$17
     sta scroll_d016
+    lda respawn_pending
+    beq :+
+    lda #0
+    sta respawn_pending
+    jsr player_respawn      ; camera and both start buffers are ready first
+:
     lda #GAME_LOAD_READY
     sta game_state
 @done:
@@ -336,9 +344,15 @@ player_damage:
     beq @game_over_state
     lda #50
     sta damage_cooldown
-    jsr player_respawn
-    rts
+    lda #1
+    sta respawn_pending
+    lda #0                  ; do not publish the old position during the rebuild
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
+    jmp begin_level_load    ; reset camera now; spawn after Screen A/B are ready
 @game_over_state:
+    lda #0
+    sta respawn_pending
     lda #9
     sta continue_seconds
     lda #50

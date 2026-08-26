@@ -17,6 +17,12 @@ that the expanded hotel route or new enemy families are implemented yet.
   entry into gameplay; the existing Phase-12 preview still opens at the stage rig.
 - The live objective field identifies the current vertical-slice location as
   `FOYER`, `HACKLU`, or `STAGE` while retaining the three-item count.
+- Landable chair rows and stage gantries now have a continuous top edge and visible
+  full-height supports; blocking walls use a closed cross-braced silhouette.
+- Non-colliding fallen-chair decoration was removed from the player foot line, and
+  generated assets declare/validate their solid, hazard, and decoration roles.
+- Damage now resets the camera and rebuilds both start-position screen buffers
+  before the player is placed at the section spawn and published again.
 
 ## Preserved contracts
 
