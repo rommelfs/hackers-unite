@@ -7,6 +7,7 @@
 .import camera_pixel_lo, camera_pixel_hi
 .import sprite_xy_shadow, sprite_enable_shadow, sprite_msb_shadow
 .import player_stance, player_vx
+.import game_state, death_timer
 
 .segment "CODE"
 sprites_init:
@@ -45,6 +46,18 @@ sprites_init:
     rts
 
 player_sprite_update:
+    lda game_state
+    cmp #GAME_DEATH
+    bne @player_visible
+    lda death_timer
+    beq @player_hidden
+    and #$04                ; impact flicker while the camera is still fixed
+    beq @player_visible
+@player_hidden:
+    lda sprite_enable_shadow
+    and #$FE
+    sta sprite_enable_shadow
+@player_visible:
     ; Convert player X from 12.4 to integer pixels.
     lda player_x_lo
     lsr
