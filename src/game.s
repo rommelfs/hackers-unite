@@ -12,11 +12,11 @@
 .import boss_defeats, boss_hits, trap_hits, secret_found
 .import falling_drops, rolling_cycles, action_hits
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
-.import death_timer, death_sequences
+.import respawn_pending, respawn_render_row, sprite_enable_shadow, sprite_msb_shadow
 .import camera_pixel_lo, camera_pixel_hi, camera_char
 .import rendered_camera_char, screen_a_char, screen_b_char
 .import visible_buffer, visible_d018, scroll_d016
-.import window_render_target
+.import window_render_target, window_render_respawn_slice
 .import level_layout_apply, level_layout_begin, level_layout_step
 .import sfx_damage, sfx_level_clear
 
@@ -48,8 +48,8 @@ game_init:
     sta continue_tick
     sta continues_used
     sta continue_timeouts
-    sta death_timer
-    sta death_sequences
+    sta respawn_pending
+    sta respawn_render_row
 .ifdef PHASE12_PREVIEW
     lda #3
 .else
@@ -117,41 +117,6 @@ game_update:
     ; GAME_LOAD_READY: both buffers are coherent, resume next frame.
     lda #GAME_PLAY
     sta game_state
-    rts
-
-; Keep the defeated player at the impact location for a short flashing fall,
-; then let the camera return to the section start.  scroll_return_update owns
-; the camera movement; respawning is deliberately the final operation here so
-; no live player can exist off-screen during the return trip.
-@death:
-    lda death_timer
-    beq @death_camera
-    dec death_timer
-    rts
-@death_camera:
-    lda camera_pixel_lo
-    ora camera_pixel_hi
-    beq @death_arrived
-    rts
-@death_arrived:
-    inc death_sequences
-    lda lives
-    beq @death_continue
-    jsr player_respawn
-    lda #50
-    sta damage_cooldown
-    lda #GAME_PLAY
-    sta game_state
-    rts
-@death_continue:
-    lda #9
-    sta continue_seconds
-    lda #50
-    sta continue_tick
-    lda #GAME_CONTINUE
-    sta game_state
-    lda #0
-    sta damage_cooldown
     rts
 
 @briefing:
@@ -265,6 +230,16 @@ game_update:
     rts
 
 @load_a:
+    lda respawn_pending
+    beq @load_a_full
+    lda #>SCREEN_A
+    jsr window_render_respawn_slice
+    lda respawn_render_row
+    bne @done
+    lda #GAME_LOAD_B
+    sta game_state
+    rts
+@load_a_full:
     lda #>SCREEN_A
     jsr window_render_target
     lda #GAME_LOAD_B
@@ -272,8 +247,17 @@ game_update:
     rts
 
 @load_b:
+    lda respawn_pending
+    beq @load_b_full
+    lda #>SCREEN_B
+    jsr window_render_respawn_slice
+    lda respawn_render_row
+    bne @done
+    jmp @load_b_ready
+@load_b_full:
     lda #>SCREEN_B
     jsr window_render_target
+@load_b_ready:
     lda #0
     sta screen_a_char
     sta screen_b_char
@@ -381,7 +365,25 @@ player_damage:
     lda lives
     beq @begin_death
     dec lives
-    bne @begin_death
+    beq @game_over_state
+    lda #50
+    sta damage_cooldown
+    lda #1
+    sta respawn_pending
+    lda #0                  ; do not publish the old position during the rebuild
+    sta respawn_render_row
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
+    jmp begin_level_load    ; reset camera now; spawn after Screen A/B are ready
+@game_over_state:
+    lda #0
+    sta respawn_pending
+    lda #9
+    sta continue_seconds
+    lda #50
+    sta continue_tick
+    lda #GAME_CONTINUE
+    sta game_state
     inc game_over_count
 @begin_death:
     lda #25                 ; half-second impact/flicker before camera travel

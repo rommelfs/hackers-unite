@@ -31,15 +31,7 @@ The user values actual playability over a technically animated proof of concept.
 
 When reporting completion, lead with what is playable and what was verified. Do not describe a static diagnostic screen as a game milestone.
 
-## Current implementation: Phase 13 playability correction
-
-Phase 13 orders death presentation correctly: impact flicker, camera return,
-then respawn (or Continue after a lethal hit). Solid chair-row and gantry
-platforms now use a bright full-height support fascia, and Level 1 contains
-three enemies. The equipment/power-up system is explicitly specified for the
-next gameplay phase in `docs/PHASE_13_REPORT.md`; it is not yet implemented.
-
-## Phase 12 narrative-shell increment
+## Current implementation: Phase 12 narrative-shell increment
 
 Phase 12 has begun. Cold boot presents a `HACK.LU 2026` mission briefing naming
 the stage goal and three fictional PoC components; Fire enters gameplay through a
@@ -55,7 +47,8 @@ continuous bright lip and full-height supports, makes walls closed and cross-bra
 and removes non-colliding fallen-chair decoration from the foot line. The asset
 manifest and validator enforce explicit solid/hazard/decoration groups. Damage
 recovery now freezes gameplay, resets the camera, rebuilds Screen A and Screen B at
-the section start, and only then places and republishes the player spawn.
+the section start in eight-row slices, and only then places and republishes the
+player spawn. Do not collapse those slices back into a full live-frame render.
 
 Phases 1-11 are implemented.
 

@@ -292,26 +292,40 @@ ui_update:
     and #$0E
     cmp #$0E
     beq @exit_ready
-    ldx #0
-@items:
     lda level_number
     cmp #2
     beq @items_hacklu
     cmp #3
     beq @items_stage
+    ldx #0
+@items_foyer:
     lda foyer_items_text,x
-    jmp @items_store
-@items_hacklu:
-    lda hacklu_items_text,x
-    jmp @items_store
-@items_stage:
-    lda stage_items_text,x
-@items_store:
     sta SCREEN_A+(24*40)+30,x
     sta SCREEN_B+(24*40)+30,x
     inx
     cpx #9
-    bne @items
+    bne @items_foyer
+    jmp @items_count
+@items_hacklu:
+    ldx #0
+@items_hacklu_loop:
+    lda hacklu_items_text,x
+    sta SCREEN_A+(24*40)+30,x
+    sta SCREEN_B+(24*40)+30,x
+    inx
+    cpx #9
+    bne @items_hacklu_loop
+    jmp @items_count
+@items_stage:
+    ldx #0
+@items_stage_loop:
+    lda stage_items_text,x
+    sta SCREEN_A+(24*40)+30,x
+    sta SCREEN_B+(24*40)+30,x
+    inx
+    cpx #9
+    bne @items_stage_loop
+@items_count:
     ldx objects_collected
     lda hex_chars,x
     sta SCREEN_A+(24*40)+36

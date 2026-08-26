@@ -23,6 +23,9 @@ that the expanded hotel route or new enemy families are implemented yet.
   generated assets declare/validate their solid, hazard, and decoration roles.
 - Damage now resets the camera and rebuilds both start-position screen buffers
   before the player is placed at the section spawn and published again.
+- Respawn rendering is capped at eight playfield rows per frozen frame. This keeps
+  SID/UI work inside the PAL deadline instead of performing a full 960-cell buffer
+  rebuild in one frame.
 
 ## Preserved contracts
 

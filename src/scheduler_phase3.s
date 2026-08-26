@@ -38,7 +38,7 @@
 .import boss_shot_active, boss_shots_fired, boss_shot_hits
 .import falling_drops, rolling_cycles, action_hits, falling_warning_timer
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
-.import death_timer
+.import respawn_pending
 .import sprite_enable_shadow
 .import objects_test_boss_update
 
@@ -1283,8 +1283,17 @@ autotest_damage_cycle:
     lda player_x_hi
     cmp #$20                ; player is not moved before the camera reset
     bne @respawn_fail
-    jsr game_update         ; rebuild Screen A at camera zero
-    jsr game_update         ; rebuild Screen B, then place the player
+@finish_respawn:
+    jsr game_update         ; eight rows per call; A then B at camera zero
+    lda game_state
+    cmp #GAME_LOAD_READY
+    beq @respawn_ready
+    cmp #GAME_LOAD_A
+    beq @finish_respawn
+    cmp #GAME_LOAD_B
+    beq @finish_respawn
+    jmp @respawn_fail
+@respawn_ready:
     lda respawn_pending
     bne @respawn_fail
     lda player_x_hi
@@ -1295,11 +1304,6 @@ autotest_damage_cycle:
     bne @respawn_fail
     lda #GAME_PLAY
     sta game_state
-    lda #0
-    sta death_timer
-    sta camera_pixel_lo
-    sta camera_pixel_hi
-    jsr game_update
     lda #0
     sta damage_cooldown
     jsr player_damage
