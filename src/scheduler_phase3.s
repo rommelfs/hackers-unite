@@ -187,19 +187,6 @@ frame_loop:
     sta test_y_hi
     jsr mutable_block_hit_test
 :
-    lda trap_hits
-    bne :+
-    lda #0
-    sta damage_cooldown
-    sta player_x_lo
-    lda #$12                ; world X 288, Level-1 spike column 18
-    sta player_x_hi
-    lda #$B0
-    sta player_y_lo
-    lda #$08
-    sta player_y_hi
-    jsr player_hazard_test
-:
     lda #$51
     sta test_fail_code
     lda objects_activated
@@ -273,6 +260,36 @@ frame_loop:
 :
     cmp #241
     bcc :+
+    jmp @fail
+:
+    ; Only force the hazard unit check after inspecting the live VIC sprite.
+    ; player_hazard_test now enters the Phase-13 death presentation, so running
+    ; it before the checks above intentionally hides/moves the player and made
+    ; the smoke test fail with $56 rather than testing the settled frame.
+    lda trap_hits
+    bne @hazard_ready
+    lda #0
+    sta damage_cooldown
+    sta player_x_lo
+    lda #$12                ; world X 288, Level-1 spike column 18
+    sta player_x_hi
+    lda #$B0
+    sta player_y_lo
+    lda #$08
+    sta player_y_hi
+    jsr player_hazard_test
+    ; This is a focused hazard-detection check. The complete death/camera/sliced
+    ; respawn state machine is exercised later by autotest_damage_cycle.
+    lda #GAME_PLAY
+    sta game_state
+    lda #0
+    sta death_timer
+    sta damage_cooldown
+@hazard_ready:
+    lda #$58
+    sta test_fail_code
+    lda trap_hits
+    bne :+
     jmp @fail
 :
 .ifndef SOAK_TEST
