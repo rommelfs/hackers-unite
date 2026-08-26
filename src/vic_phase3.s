@@ -16,6 +16,7 @@
 .import camera_pixel_lo, camera_pixel_hi, camera_char, rendered_camera_char
 .import screen_a_char, screen_b_char, player_x_lo, player_x_hi
 .import player_stance
+.import sprite_enable_shadow, sprite_msb_shadow
 
 .segment "CODE"
 vic_init:
