@@ -1,6 +1,6 @@
 .include "constants.inc"
 
-.export vic_init, ui_update
+.export vic_init, ui_update, presentation_init
 .import charset_install, scroll_init
 .import player_init, sprites_init, objects_sprite_init, game_init
 .import frame_counter_lo, dropped_frames, score_lo, score_hi, lives, game_state
@@ -69,12 +69,87 @@ vic_init:
     jsr projectile_init
     jsr boss_attack_init
     jsr sound_init
+.ifndef AUTOTEST
+.ifndef PHASE12_PREVIEW
+    jsr presentation_init
+.endif
+.endif
     lda visible_d018
     sta VIC_MEMPTR
     lda scroll_d016
     sta VIC_CTRL2
     lda #$1B
     sta VIC_CTRL1
+    rts
+
+; Cold-boot presentation for the first Phase-12 vertical slice. It is drawn only
+; before IRQs start, so the full-screen writes cannot consume a live PAL frame.
+; Fire rebuilds both scrolling buffers through the normal staged loading path.
+presentation_init:
+    lda #0
+    ldx #0
+@clear_pages:
+    sta SCREEN_A+$000,x
+    sta SCREEN_A+$100,x
+    sta SCREEN_A+$200,x
+    sta SCREEN_B+$000,x
+    sta SCREEN_B+$100,x
+    sta SCREEN_B+$200,x
+    inx
+    bne @clear_pages
+    ldx #0
+@clear_tail:
+    sta SCREEN_A+$300,x
+    sta SCREEN_B+$300,x
+    inx
+    cpx #192                ; keep fixed status row and sprite pointers intact
+    bne @clear_tail
+
+    ldx #0
+@title:
+    lda title_hacklu,x
+    sta SCREEN_A+(4*40)+14,x
+    sta SCREEN_B+(4*40)+14,x
+    inx
+    cpx #12
+    bne @title
+    ldx #0
+@road:
+    lda title_road,x
+    sta SCREEN_A+(7*40)+9,x
+    sta SCREEN_B+(7*40)+9,x
+    inx
+    cpx #21
+    bne @road
+    ldx #0
+@mission:
+    lda title_mission,x
+    sta SCREEN_A+(10*40)+10,x
+    sta SCREEN_B+(10*40)+10,x
+    inx
+    cpx #20
+    bne @mission
+    ldx #0
+@kit:
+    lda title_kit,x
+    sta SCREEN_A+(12*40)+9,x
+    sta SCREEN_B+(12*40)+9,x
+    inx
+    cpx #21
+    bne @kit
+    ldx #0
+@start:
+    lda title_start,x
+    sta SCREEN_A+(17*40)+10,x
+    sta SCREEN_B+(17*40)+10,x
+    inx
+    cpx #19
+    bne @start
+    lda #GAME_BRIEFING
+    sta game_state
+    lda #0
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
     rts
 
 status_init:
@@ -160,6 +235,8 @@ ui_update:
     beq @level_clear_state
     cmp #GAME_COMPLETE
     beq @complete_state
+    cmp #GAME_BRIEFING
+    beq @briefing_state
     ldx #0
 @loading:
     lda loading_text,x
@@ -199,6 +276,16 @@ ui_update:
     cpx #9
     bne @complete
     jmp @state_done
+@briefing_state:
+    ldx #0
+@briefing:
+    lda briefing_text,x
+    sta SCREEN_A+(24*40)+30,x
+    sta SCREEN_B+(24*40)+30,x
+    inx
+    cpx #9
+    bne @briefing
+    jmp @state_done
 @play_state:
     lda object_persistence
     and #$0E
@@ -206,7 +293,19 @@ ui_update:
     beq @exit_ready
     ldx #0
 @items:
-    lda items_text,x
+    lda level_number
+    cmp #2
+    beq @items_hacklu
+    cmp #3
+    beq @items_stage
+    lda foyer_items_text,x
+    jmp @items_store
+@items_hacklu:
+    lda hacklu_items_text,x
+    jmp @items_store
+@items_stage:
+    lda stage_items_text,x
+@items_store:
     sta SCREEN_A+(24*40)+30,x
     sta SCREEN_B+(24*40)+30,x
     inx
@@ -352,11 +451,27 @@ loading_text:
     .byte 14,5,24,20,0,18,15,23,0    ; NEXT ROW
 complete_text:
     .byte 20,1,12,11,18,5,1,4,25     ; TALKREADY
-items_text:
-    .byte 11,9,20,0,0,0,27,39,30     ; KIT   0:3
+foyer_items_text:
+    .byte 6,15,25,5,18,0,27,39,30     ; FOYER 0:3
+hacklu_items_text:
+    .byte 8,1,3,11,12,21,27,39,30     ; HACKLU0:3
+stage_items_text:
+    .byte 19,20,1,7,5,0,27,39,30      ; STAGE 0:3
 exit_text:
     .byte 20,15,0,19,20,1,7,5,0      ; TO STAGE
 boss_text:
     .byte 1,22,0,2,15,19,19,0,0      ; AV BOSS
+briefing_text:
+    .byte 8,1,3,11,40,12,21,0,0       ; HACK.LU
 hex_chars:
     .byte 27,28,29,30,31,32,33,34,35,36,1,2,3,4,5,6
+title_hacklu:
+    .byte 8,1,3,11,40,12,21,0,29,27,29,33    ; HACK.LU 2026
+title_road:
+    .byte 20,8,5,0,18,15,1,4,0,20,15,0,20,8,5,0,19,20,1,7,5
+title_mission:
+    .byte 3,15,13,16,12,5,20,5,0,20,8,5,0,18,3,5,0,16,15,3
+title_kit:
+    .byte 5,14,20,18,25,0,16,1,25,12,15,1,4,0,20,18,9,7,7,5,18
+title_start:
+    .byte 6,9,18,5,0,20,15,0,19,20,1,18,20,0,18,15,21,20,5
