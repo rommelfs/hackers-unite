@@ -1,8 +1,8 @@
 # Hackers Unite
 
 Native C64 platform game, built from scratch with ca65/ld65. The current milestone
-is **Phase 12: a hack.lu 2026 briefing and location-aware vertical-slice HUD on top
-of the Phase-11 gameplay foundation**.
+is **Phase 13: readable collision affordances and camera-first sliced respawning on
+top of the Phase-12 hack.lu briefing**.
 
 ## Requirements
 
@@ -86,4 +86,4 @@ Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of
 - cold-boot `HACK.LU 2026` mission briefing with a staged transition into gameplay
 - `FOYER`/`HACKLU`/`STAGE` objective labels for the current three-layout slice
 
-See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
+See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).

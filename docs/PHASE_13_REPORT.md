@@ -1,51 +1,34 @@
-# Phase 13 report: readable routes and ordered respawn
+# Phase 13 report: readable geometry and deterministic recovery
 
-Phase 13 is a focused playability correction. It does not introduce the planned
-equipment system; that work is capacity-gated as the next gameplay phase.
+Phase 13 is the stabilization pass after the Phase-12 briefing. It keeps the
+three-layout gameplay content but makes collision affordances explicit and changes
+death recovery to reset the camera before republishing the player.
 
-## Implemented
+## Runtime changes
 
-- Taking damage now enters a dedicated death state. The player flashes for 25
-  PAL frames, disappears, and only then does the camera travel back toward the
-  section origin at two pixels per logical frame.
-- The player is respawned only after the camera reaches zero. A lethal hit uses
-  the same presentation before opening Continue, so a replacement player can
-  never exist invisibly at the origin during the camera return.
-- Traversable chair rows and factory gantries now have a bright, enclosed
-  16-pixel support fascia. Decorative audience chairs remain dark and open, so
-  collision-bearing platforms have a consistent silhouette in every layout.
-- Level 1 now starts with three enemies instead of two: two floor patrols and a
-  later flying patrol. The seven-object ceiling and fixed software boxes remain
-  unchanged; Level 2 still uses all four enemy-capable IDs.
+- A hit hides gameplay sprites, resets camera state to the section origin, and
+  enters a frozen respawn rebuild.
+- Screen A and Screen B are rebuilt in eight-row slices. The player is placed at
+  spawn only after both buffers are coherent at camera zero.
+- The slice routine lives in the dedicated linker segment `CODE3` at `$5800`,
+  preserving the projectile window at `$5500-$5754` and primary-code headroom at
+  `$6000`.
+- The HUD chooses its location string once per frame and copies it through a single
+  bounded loop.
 
-## Power-up follow-up contract
+## Visual changes
 
-The next gameplay phase will replace the current always-available projectile
-set with persistent, mutually exclusive equipment states. It must implement the
-following progression without adding simulation passes or artwork-based
-collision:
+- Foreground platforms use closed full-height silhouettes and uninterrupted top
+  edges that match their authoritative 16x16 collision cells.
+- Walls use a closed cross-braced silhouette; hazards remain visibly open and
+  carry no `SOLID` flag.
+- Non-colliding fallen chairs no longer sit on the player foot line.
+- Generator metadata and host validation enforce solid, hazard, and decoration
+  roles without committing regenerated binary diffs to pull requests.
 
-1. Start a new campaign unarmed. Stomping remains available.
-2. Sword: short, directional Fire attack with a fixed software rectangle.
-3. Stone: ballistic Fire throw.
-4. Pistol: straight Fire shot.
-5. Bombs: Fire plus direction selects the arc.
-6. Bonus life: immediate life increment.
-7. Power: upgrade the held weapon's damage or reach, with a documented cap.
-8. Run boost: raise acceleration/top speed only if PAL soak timing and the
-   existing collision probes remain safe at the higher displacement.
+## Validation contract
 
-Weapon pickups must not consume permanent hardware-sprite slots. The preferred
-implementation swaps one bounded pickup through the existing object pool and
-stores `weapon_kind`, `weapon_power`, and `run_boost` in BSS. The projectile
-slot remains singular and deterministic. HUD state must make “unarmed” and the
-active weapon explicit. This phase is intentionally deferred rather than
-silently treating the existing Fire modes as finished power-ups.
-
-## Preserved contracts
-
-Death presentation is still advanced exactly once per logical 50 Hz frame.
-Camera return reuses the existing one/two-column Screen A/B publisher and does
-not write Color RAM. Player and enemy collision remain authoritative fixed
-software boxes. The staged three-layout patch loader and SID play cadence are
-unchanged.
+`make build test`, `make soak`, and `make disk` remain the release gate. The smoke
+test identifies a dropped-frame regression as debug-cart code `$41` (decimal 65).
+The respawn autotest additionally proves camera-zero-before-spawn ordering and
+completion of all Screen A/B slices.

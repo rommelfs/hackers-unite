@@ -482,6 +482,7 @@ window_render_target:
 ; A = target screen high byte. Rebuild eight rows at camera zero per frozen
 ; respawn frame. Three calls complete one buffer without approaching the PAL
 ; deadline that a full 960-cell rebuild plus SID/UI work can exceed.
+.segment "CODE3"
 window_render_respawn_slice:
     sta tile_col
     sta screen_ptr+1
@@ -552,6 +553,8 @@ window_render_respawn_slice:
 @store_row:
     sta respawn_render_row
     rts
+
+.segment "CODE"
 
 ; Overlay the authoritative Phase-5 map patch at metatile (10,8).
 ; The immutable expanded world below it is empty. A state change refreshes these

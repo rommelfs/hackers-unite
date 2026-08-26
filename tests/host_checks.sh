@@ -44,6 +44,8 @@ rg -q 'respawn_pending' release/hackers-unite.lbl
 rg -q 'respawn_render_row' release/hackers-unite.lbl
 rg -q 'al 001800 .sid_tune_data' release/hackers-unite.lbl
 rg -q '^CODE[[:space:]]+006000' "$map"
+rg -q '^CODE2[[:space:]]+005500' "$map"
+rg -q '^CODE3[[:space:]]+005800' "$map"
 rg -q '^RODATA[[:space:]]+008000' "$map"
 rg -q '^BSS[[:space:]]+002600' "$map"
 test "$(wc -c < assets/c64/object-sprites.bin | tr -d ' ')" -eq 256

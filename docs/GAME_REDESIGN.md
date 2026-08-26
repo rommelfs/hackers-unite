@@ -266,7 +266,7 @@ The redesign changes content and presentation, not the runtime contract:
 - all interaction through fixed software AABBs and authoritative metatile flags;
 - staged layout loading, at most 16 patch records per frozen loading frame;
 - SID at `$1800`, BSS at `$2600`, secondary projectile code at `$5500-$5754`,
-  primary code at `$6000`, and RODATA at `$8000`;
+  respawn renderer code at `$5800`, primary code at `$6000`, and RODATA at `$8000`;
 - music play called exactly once per logical frame.
 
 New narrative state must be budgeted before implementation. Prefer reusing the

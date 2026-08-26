@@ -182,7 +182,12 @@ Current release artifacts:
 - `release/hackers-unite.map`
 - `release/hackers-unite.lbl`
 
-The authorized SID payload occupies `$1800-$24D2` and reserves work cells through `$2502`. Runtime BSS is `$2600-$26A9`, projectile code is `$5500-$5754`, primary game code is `$6000-$7E2E`, and read-only data is `$8000-$A200`. BASIC ROM is disabled after startup so automated code at `$B000` is visible; KERNAL and I/O remain mapped.
+The authorized SID payload occupies `$1800-$24D2` and reserves work cells through
+`$2502`. Runtime BSS begins at `$2600`, projectile code remains fixed at
+`$5500-$5754`, the Phase-13 sliced respawn renderer has its own linker window at
+`$5800`, primary game code begins at `$6000`, and read-only data begins at `$8000`.
+BASIC ROM is disabled after startup so automated code at `$B000` is visible;
+KERNAL and I/O remain mapped.
 
 ## Important files
 

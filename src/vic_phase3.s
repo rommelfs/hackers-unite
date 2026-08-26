@@ -292,40 +292,28 @@ ui_update:
     and #$0E
     cmp #$0E
     beq @exit_ready
+    ldy #0
     lda level_number
     cmp #2
     beq @items_hacklu
     cmp #3
     beq @items_stage
-    ldx #0
-@items_foyer:
-    lda foyer_items_text,x
-    sta SCREEN_A+(24*40)+30,x
-    sta SCREEN_B+(24*40)+30,x
-    inx
-    cpx #9
-    bne @items_foyer
-    jmp @items_count
+    jmp @items_source
 @items_hacklu:
-    ldx #0
-@items_hacklu_loop:
-    lda hacklu_items_text,x
-    sta SCREEN_A+(24*40)+30,x
-    sta SCREEN_B+(24*40)+30,x
-    inx
-    cpx #9
-    bne @items_hacklu_loop
-    jmp @items_count
+    ldy #9
+    bne @items_source
 @items_stage:
+    ldy #18
+@items_source:
     ldx #0
-@items_stage_loop:
-    lda stage_items_text,x
+@items_loop:
+    lda location_items_text,y
     sta SCREEN_A+(24*40)+30,x
     sta SCREEN_B+(24*40)+30,x
+    iny
     inx
     cpx #9
-    bne @items_stage_loop
-@items_count:
+    bne @items_loop
     ldx objects_collected
     lda hex_chars,x
     sta SCREEN_A+(24*40)+36
@@ -466,11 +454,9 @@ loading_text:
     .byte 14,5,24,20,0,18,15,23,0    ; NEXT ROW
 complete_text:
     .byte 20,1,12,11,18,5,1,4,25     ; TALKREADY
-foyer_items_text:
+location_items_text:
     .byte 6,15,25,5,18,0,27,39,30     ; FOYER 0:3
-hacklu_items_text:
     .byte 8,1,3,11,12,21,27,39,30     ; HACKLU0:3
-stage_items_text:
     .byte 19,20,1,7,5,0,27,39,30      ; STAGE 0:3
 exit_text:
     .byte 20,15,0,19,20,1,7,5,0      ; TO STAGE
