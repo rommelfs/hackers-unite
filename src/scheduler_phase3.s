@@ -38,6 +38,7 @@
 .import boss_shot_active, boss_shots_fired, boss_shot_hits
 .import falling_drops, rolling_cycles, action_hits, falling_warning_timer
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
+.import respawn_pending, death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
 
@@ -186,19 +187,6 @@ frame_loop:
     sta test_y_hi
     jsr mutable_block_hit_test
 :
-    lda trap_hits
-    bne :+
-    lda #0
-    sta damage_cooldown
-    sta player_x_lo
-    lda #$12                ; world X 288, Level-1 spike column 18
-    sta player_x_hi
-    lda #$B0
-    sta player_y_lo
-    lda #$08
-    sta player_y_hi
-    jsr player_hazard_test
-:
     lda #$51
     sta test_fail_code
     lda objects_activated
@@ -272,6 +260,36 @@ frame_loop:
 :
     cmp #241
     bcc :+
+    jmp @fail
+:
+    ; Only force the hazard unit check after inspecting the live VIC sprite.
+    ; player_hazard_test now enters the Phase-13 death presentation, so running
+    ; it before the checks above intentionally hides/moves the player and made
+    ; the smoke test fail with $56 rather than testing the settled frame.
+    lda trap_hits
+    bne @hazard_ready
+    lda #0
+    sta damage_cooldown
+    sta player_x_lo
+    lda #$12                ; world X 288, Level-1 spike column 18
+    sta player_x_hi
+    lda #$B0
+    sta player_y_lo
+    lda #$08
+    sta player_y_hi
+    jsr player_hazard_test
+    ; This is a focused hazard-detection check. The complete death/camera/sliced
+    ; respawn state machine is exercised later by autotest_damage_cycle.
+    lda #GAME_PLAY
+    sta game_state
+    lda #0
+    sta death_timer
+    sta damage_cooldown
+@hazard_ready:
+    lda #$58
+    sta test_fail_code
+    lda trap_hits
+    bne :+
     jmp @fail
 :
 .ifndef SOAK_TEST
@@ -1255,14 +1273,119 @@ autotest_damage_cycle:
     sta game_over_count
     lda #3
     sta lives
+    lda #$40
+    sta camera_pixel_lo
+    lda #1
+    sta camera_pixel_hi
+    lda #$20
+    sta player_x_lo
+    lda #$20
+    sta player_x_hi
     jsr player_damage
+    lda game_state
+    cmp #GAME_DEATH
+    beq :+
+    jmp @respawn_fail
+:
+    lda death_timer
+    cmp #25
+    beq :+
+    jmp @respawn_fail
+:
+    lda camera_pixel_lo
+    cmp #$40
+    beq :+
+    jmp @respawn_fail
+:
+    lda camera_pixel_hi
+    cmp #1
+    beq :+
+    jmp @respawn_fail
+:
+    lda player_x_hi
+    cmp #$20                ; impact presentation keeps the death position
+    beq :+
+    jmp @respawn_fail
+:
+    lda #0
+    sta death_timer
+    sta camera_pixel_lo      ; skip travel; exercise arrival ordering directly
+    sta camera_pixel_hi
+    jsr game_update
+    lda game_state
+    cmp #GAME_LOAD_A
+    beq :+
+    jmp @respawn_fail
+:
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    beq :+
+    jmp @respawn_fail
+:
+    lda respawn_pending
+    cmp #1
+    beq :+
+    jmp @respawn_fail
+:
+    lda player_x_hi
+    cmp #$20                ; player is not moved before the camera reset
+    beq :+
+    jmp @respawn_fail
+:
+@finish_respawn:
+    jsr game_update         ; eight rows per call; A then B at camera zero
+    lda game_state
+    cmp #GAME_LOAD_READY
+    beq @respawn_ready
+    cmp #GAME_LOAD_A
+    beq @finish_respawn
+    cmp #GAME_LOAD_B
+    beq @finish_respawn
+    jmp @respawn_fail
+@respawn_ready:
+    lda respawn_pending
+    beq :+
+    jmp @respawn_fail
+:
+    lda player_x_hi
+    cmp #$04
+    beq :+
+    jmp @respawn_fail
+:
+    lda game_state
+    cmp #GAME_LOAD_READY
+    beq :+
+    jmp @respawn_fail
+:
+    lda #GAME_PLAY
+    sta game_state
     lda #0
     sta damage_cooldown
     jsr player_damage
     lda #0
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
+    lda #0                  ; second rebuild was covered above; reach last life
+    sta respawn_pending
+    lda #GAME_PLAY
+    sta game_state
     sta damage_cooldown
+    lda #0
     jsr player_damage
+    lda #0
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
     rts
+@respawn_fail:
+    lda #$8C
+    sta test_fail_code
+    sta $D7FF
+@respawn_halt:
+    jmp @respawn_halt
 
 autotest_level_exit:
     lda #$00
