@@ -22,6 +22,28 @@ The supplied hack.lu 2026 banner and logo crop are the authoritative visual refe
 
 The conversion palette is fixed in `assets/c64-palette.ppm`. Gameplay should favor black, dark grey, muted olive and cyan. Green marks active systems and portals. Red and blue are reserved for warnings and device lights. Large black regions are intentional and preserve sprite readability.
 
+## Gameplay affordances
+
+Artwork must communicate the authoritative metatile flags before decoration:
+
+- **Safe ground and landable platforms** have an uninterrupted bright top lip and
+  visible supports through the entire 16-pixel metatile collision height.
+- **Full blocking walls** use a closed outline and cross-bracing. They never show an
+  open lower edge that could suggest a crawl route.
+- **Hazards** use sharp cable/arc silhouettes, warning contrast, and no safe-looking
+  top lip. They carry `HAZARD` but never `SOLID`.
+- **Background audience and chairs** begin with open/black space and never reuse
+  the foreground platform silhouette.
+- **Decoration** may not sit on the player foot line when its shape resembles an
+  obstacle. In particular, non-colliding fallen chairs are not placed on the aisle.
+- **Collectibles and enemies** remain sprites; decoration must not imitate their
+  silhouettes.
+
+These rules are semantic rather than palette-only. Level 3 changes the shared
+multicolor inks, so outline and fill structure must remain readable even when color
+meaning changes. The asset manifest lists solid, hazardous, and decorative
+metatiles, and `tools/validate_assets.py` verifies their flag contracts.
+
 ## Source and derived assets
 
 - `assets/reference/`: untouched supplied references
