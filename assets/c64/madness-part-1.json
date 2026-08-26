@@ -1,0 +1,15 @@
+{
+  "format": "PSID v2",
+  "title": "Madness (part 1)",
+  "author": "Jesper Jensen (Tricket)",
+  "copyright": "1988 Noise",
+  "load_address": 6144,
+  "end_address": 9426,
+  "init_address": 6144,
+  "play_address": 6150,
+  "songs": 1,
+  "start_song": 1,
+  "speed": "VBI/50 Hz",
+  "payload_bytes": 3283,
+  "permission": "Use authorized by the project owner, who reports permission from Jesper Jensen."
+}

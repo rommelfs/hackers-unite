@@ -1,0 +1,171 @@
+{
+  "phase": 12,
+  "charset_bytes": 2048,
+  "hires_character_range": [
+    0,
+    63
+  ],
+  "multicolor_character_range": [
+    64,
+    255
+  ],
+  "metatile_size_characters": [
+    2,
+    2
+  ],
+  "metatile_count": 35,
+  "metatile_names": [
+    "empty",
+    "chair_back_a",
+    "chair_back_b",
+    "audience_a",
+    "audience_b",
+    "ceiling_light",
+    "hanging_cable",
+    "light_corner",
+    "aisle_floor",
+    "aisle_marker",
+    "chair_row",
+    "hall_wall",
+    "stage_frame",
+    "banner_top",
+    "banner_mid",
+    "banner_bottom",
+    "stage_arch_tl",
+    "stage_arch_tr",
+    "stage_arch_ml",
+    "stage_arch_mr",
+    "stage_arch_bl",
+    "stage_arch_br",
+    "stage_screen",
+    "av_cart",
+    "badge_symbol",
+    "slides_symbol",
+    "coffee_symbol",
+    "projector",
+    "exit_sign",
+    "fallen_chair",
+    "cable_trap",
+    "live_cable",
+    "tech_panel",
+    "rig_warning",
+    "tech_gantry"
+  ],
+  "map_size_metatiles": [
+    64,
+    12
+  ],
+  "map_size_characters": [
+    128,
+    24
+  ],
+  "viewport_size_characters": [
+    40,
+    24
+  ],
+  "exit_zone_pixels": [
+    944,
+    1008
+  ],
+  "level_count": 3,
+  "level_layout_patch_count": 140,
+  "level_layout_patch_stride": 7,
+  "level1_pickups": [
+    [
+      100,
+      139
+    ],
+    [
+      190,
+      139
+    ],
+    [
+      270,
+      139
+    ]
+  ],
+  "level2_pickups": [
+    [
+      140,
+      91
+    ],
+    [
+      470,
+      91
+    ],
+    [
+      760,
+      91
+    ]
+  ],
+  "level2_crawl_tunnel": [
+    34,
+    36
+  ],
+  "level1_traps": [
+    18,
+    38
+  ],
+  "level2_traps": [
+    12,
+    18,
+    22,
+    32,
+    38,
+    43,
+    50
+  ],
+  "level3_pickups": [
+    [
+      280,
+      91
+    ],
+    [
+      520,
+      91
+    ],
+    [
+      760,
+      75
+    ]
+  ],
+  "level3_step_platform": [
+    40,
+    43
+  ],
+  "level3_spike_traps": [
+    8,
+    9,
+    37,
+    38
+  ],
+  "level3_electric_traps": [
+    22,
+    23
+  ],
+  "level3_falling_lanes": [
+    26,
+    41,
+    53
+  ],
+  "level3_rolling_spawn": 900,
+  "campaign_sections": [
+    "foyer",
+    "auditorium",
+    "stage_rig"
+  ],
+  "final_goal": "speaker_stage",
+  "row_color_count": 24,
+  "sprite_frame_count": 4,
+  "sprite_bytes": 256,
+  "object_sprite_count": 4,
+  "object_sprite_bytes": 256,
+  "stance_sprite_count": 2,
+  "stance_sprite_bytes": 128,
+  "projectile_sprite_bytes": 64,
+  "bomb_sprite_bytes": 64,
+  "boss_sprite_bytes": 64,
+  "action_sprite_count": 3,
+  "action_sprite_bytes": 192,
+  "legal_flags_mask": 131
+}

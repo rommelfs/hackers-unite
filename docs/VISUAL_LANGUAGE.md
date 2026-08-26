@@ -1,0 +1,33 @@
+# Visual language
+
+The supplied hack.lu 2026 banner and logo crop are the authoritative visual references. Hackers Unite does not reproduce the conference badge or its wording. It extracts a compact game vocabulary from the artwork and recombines it around the game's own title and mechanics.
+
+## Core motifs
+
+| Motif | Game role | C64 treatment |
+|---|---|---|
+| Broken monumental `2` | Terminal ruin, left portal half | 4x6-character metatile with terminal cavity |
+| Broken monumental `0` | Network gate, right portal half | 4x6-character metatile; interior animated separately |
+| Green vortex | Active data portal | Three 24x21 multicolor sprite frames or animated character cluster |
+| Spider camera | Ground enemy and observer | Two 24x21 sprite orientations |
+| Flying camera | Air enemy and searchlight hazard | Multicolor sprite plus optional beam characters |
+| Padlock | Access-key collectible | 12x14 readable item sprite |
+| Onion | Privacy-route collectible | 12x14 item sprite |
+| Chain link | Connection/repair collectible | 12x14 item sprite |
+| CRT pedestal | Checkpoint or terminal | 3x3-character environmental object |
+| Cable bundles | Structural decoration | Horizontal, vertical and corner tiles |
+| Ruined skyline | Parallax/background layer | Repeating black silhouette character modules |
+
+## Palette
+
+The conversion palette is fixed in `assets/c64-palette.ppm`. Gameplay should favor black, dark grey, muted olive and cyan. Green marks active systems and portals. Red and blue are reserved for warnings and device lights. Large black regions are intentional and preserve sprite readability.
+
+## Source and derived assets
+
+- `assets/reference/`: untouched supplied references
+- `assets/source/hackers-unite-title-concept-v1.png`: ImageGen title composition
+- `assets/source/hackers-unite-asset-sheet-v1.png`: ImageGen reusable motif sheet
+- `assets/source/motifs/`: deterministic crops from the sheet
+- `assets/c64-preview/hackers-unite-title-320x200.png`: nearest-neighbor, fixed 16-color preview
+
+Run `make assets` to regenerate all derived crops and the C64-sized preview. These files are design inputs, not yet packed VIC-II bitmap, character, or sprite data. Phase 2 converts the selected motifs into explicit 8x8 character and 24x21 sprite bytes.

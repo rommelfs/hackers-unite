@@ -1,0 +1,11 @@
+# Phase 10 report: escalating endless run
+
+Phase 10 turns the two-level campaign into an endless score run. Every cleared section increments a persistent 16-bit danger rank. Level 1 and Level 2 continue to alternate after `SYSTEM OK` without resetting score or lives; a game-over restart still begins a fresh rank-zero campaign. The status row exposes the low rank byte as `Rxx`.
+
+Difficulty grows through deterministic, bounded 50 Hz rules. Rank 2 adds the flying drone to Level 1, regular patrols lose their half-rate delay, later thresholds add movement steps, and every new Level-2 visit gives its boss another hit point until the one-byte ceiling. The counter itself continues beyond that hardware ceiling, so the run does not terminate, while motion remains bounded enough to preserve collision correctness.
+
+Level 2 now ends in a real boss encounter. Object ID 6 uses original armored-eye art with VIC-II X/Y expansion, a separate 36x44 software collision box, multiple hit points, six-frame hit invulnerability, tracking movement and an extra low-health rage step. Shots and valid stomps share the same damage routine. The portal requires both all three item bits and the boss-defeat bit; the UI reports boss HP before changing to `EXIT UP`.
+
+The world adds visible spike traps through a new `HAZARD=$02` metatile flag. They remain non-solid and use two fixed player-foot probes. Level 1 introduces two traps; Level 2 has eight around landings and the boss approach. The existing mutable block now reveals a one-shot 1-Up and 100-point secret. Projectile pixels moved to the top of their hardware-sprite cell, matching the already hand-height physical spawn coordinate.
+
+Validation covers the exact hazard layouts and support floor, projectile row alignment, boss asset size/padding, boss HP and eight-hit rank-1 defeat, invulnerability bypass prevention, boss exit gating, hidden bonus, trap damage, two danger-rank increments and the harder Level-1 restart. `make build test` and the 7,680-frame PAL `make soak` pass with no dropped frames or missed publish deadlines. `build/phase10-boss.png` was inspected for sprite expansion, new status layout, traps, scrolling playfield integrity and VIC artifacts.
