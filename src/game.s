@@ -79,6 +79,8 @@ game_update:
     beq @game_over
     cmp #GAME_CONTINUE
     beq @continue
+    cmp #GAME_BRIEFING
+    beq @briefing
     cmp #GAME_LEVEL_CLEAR
     beq @level_clear
     cmp #GAME_COMPLETE
@@ -101,6 +103,16 @@ game_update:
     lda #GAME_PLAY
     sta game_state
     rts
+
+@briefing:
+    lda joy_pressed
+    and #JOY_FIRE
+    bne :+
+    rts
+:
+    jsr player_level_start
+    jsr objects_init
+    jmp begin_level_load
 
 @game_over:
     lda joy_pressed
