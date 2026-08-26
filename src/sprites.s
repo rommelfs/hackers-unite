@@ -57,7 +57,11 @@ player_sprite_update:
     lda sprite_enable_shadow
     and #$FE
     sta sprite_enable_shadow
+    rts
 @player_visible:
+    lda sprite_enable_shadow
+    ora #$01
+    sta sprite_enable_shadow
     ; Convert player X from 12.4 to integer pixels.
     lda player_x_lo
     lsr

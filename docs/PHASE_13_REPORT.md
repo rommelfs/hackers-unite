@@ -6,8 +6,8 @@ death recovery to reset the camera before republishing the player.
 
 ## Runtime changes
 
-- A hit hides gameplay sprites, resets camera state to the section origin, and
-  enters a frozen respawn rebuild.
+- A hit freezes simulation, removes non-player sprites, and gives the player a
+  half-second impact flicker before the camera returns toward the section origin.
 - Screen A and Screen B are rebuilt in eight-row slices. The player is placed at
   spawn only after both buffers are coherent at camera zero.
 - The slice routine lives in the dedicated linker segment `CODE3` at `$5800`,
@@ -15,6 +15,11 @@ death recovery to reset the camera before republishing the player.
   `$6000`.
 - The HUD chooses its location string once per frame and copies it through a single
   bounded loop.
+- `death_timer` drives a half-second impact flicker before the camera returns at a
+  bounded two pixels per logical frame. It never runs gameplay simulation.
+- At camera zero, surviving players enter the sliced Screen A/B rebuild; loss of
+  the final life enters Continue instead. Spawn publication still happens only
+  after both buffers are coherent.
 
 ## Visual changes
 
