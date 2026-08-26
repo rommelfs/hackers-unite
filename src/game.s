@@ -283,8 +283,7 @@ game_update:
     sta scroll_d016
     lda respawn_pending
     beq :+
-    lda #0
-    sta respawn_pending
+    dec respawn_pending      ; the pending flag is strictly boolean (1 -> 0)
     jsr player_respawn      ; camera and both start buffers are ready first
 :
     lda #GAME_LOAD_READY
