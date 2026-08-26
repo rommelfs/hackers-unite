@@ -236,13 +236,6 @@ game_update:
     inc level_transitions
     rts
 
-@load_layout:
-    jsr level_layout_step
-    bne @done
-    lda #GAME_LOAD_A
-    sta game_state
-    rts
-
 @load_a:
     lda respawn_pending
     beq @load_a_full
@@ -305,6 +298,17 @@ game_update:
     jsr objects_init
     jsr player_level_start
     jmp begin_level_patch
+
+; Keep the staged layout handler beside @done as well. level_layout_step returns
+; nonzero while records remain, so this branch is taken on most loading frames.
+; Keeping the target local avoids both a relative-branch overflow and a larger
+; long-branch trampoline in the completely full primary CODE window.
+@load_layout:
+    jsr level_layout_step
+    bne @done
+    lda #GAME_LOAD_A
+    sta game_state
+    rts
 @done:
     rts
 
