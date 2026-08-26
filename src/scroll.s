@@ -1,6 +1,7 @@
 .include "constants.inc"
 
-.export scroll_init, scroll_update, window_render_target, window_render_respawn_slice, mutable_patch_refresh
+.export scroll_init, scroll_update, scroll_return_update
+.export window_render_target, window_render_respawn_slice, mutable_patch_refresh
 .import world_chars, row_colors
 .import joy_held
 .importzp screen_ptr, color_ptr, source_ptr
@@ -41,7 +42,7 @@ scroll_init:
 scroll_update:
 .ifdef PHASE4_BUILD
     jsr camera_follow
-    jmp @publish
+    jmp scroll_publish
 .else
 .ifdef AUTOTEST
     lda scroll_direction
@@ -49,18 +50,18 @@ scroll_update:
     jsr camera_right
     lda camera_pixel_hi
     cmp #$02
-    bne @publish
+    bne scroll_publish
     lda camera_pixel_lo
     cmp #$C0
-    bne @publish
+    bne scroll_publish
     lda #0
     sta scroll_direction
-    jmp @publish
+    jmp scroll_publish
 @auto_left:
     jsr camera_left
     lda camera_pixel_lo
     ora camera_pixel_hi
-    bne @publish
+    bne scroll_publish
     lda #1
     sta scroll_direction
 .else
@@ -71,12 +72,12 @@ scroll_update:
 :
     lda joy_held
     and #JOY_LEFT
-    beq @publish
+    beq scroll_publish
     jsr camera_left
 .endif
 .endif
 
-@publish:
+scroll_publish:
     lda camera_pixel_lo
     and #$07
     eor #$07
@@ -103,10 +104,18 @@ scroll_update:
     rts
 
 .ifdef PHASE4_BUILD
-; Respawn/death recovery never enters camera_follow: game_state freezes world
-; updates and respawn_pending drives the sliced camera-zero rebuild in CODE3.
-; death_timer is retained as a zero-valued compatibility symbol for branches that
-; briefly carried the abandoned pre-slice recovery implementation.
+; Death return is presentation, not simulation: move the existing camera two
+; pixels per logical frame and reuse the bounded Screen A/B scroll publisher.
+scroll_return_update:
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    beq @return_done
+    jsr camera_left
+    jsr camera_left
+    jmp scroll_publish
+@return_done:
+    rts
+
 camera_follow:
     lda player_x_lo
     lsr

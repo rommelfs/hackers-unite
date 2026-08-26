@@ -38,7 +38,7 @@
 .import boss_shot_active, boss_shots_fired, boss_shot_hits
 .import falling_drops, rolling_cycles, action_hits, falling_warning_timer
 .import continue_seconds, continue_tick, continues_used, continue_timeouts
-.import respawn_pending
+.import respawn_pending, death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
 
@@ -1266,17 +1266,55 @@ autotest_damage_cycle:
     sta player_x_hi
     jsr player_damage
     lda game_state
+    cmp #GAME_DEATH
+    beq :+
+    jmp @respawn_fail
+:
+    lda death_timer
+    cmp #25
+    beq :+
+    jmp @respawn_fail
+:
+    lda camera_pixel_lo
+    cmp #$40
+    beq :+
+    jmp @respawn_fail
+:
+    lda camera_pixel_hi
+    cmp #1
+    beq :+
+    jmp @respawn_fail
+:
+    lda player_x_hi
+    cmp #$20                ; impact presentation keeps the death position
+    beq :+
+    jmp @respawn_fail
+:
+    lda #0
+    sta death_timer
+    sta camera_pixel_lo      ; skip travel; exercise arrival ordering directly
+    sta camera_pixel_hi
+    jsr game_update
+    lda game_state
     cmp #GAME_LOAD_A
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
     lda camera_pixel_lo
     ora camera_pixel_hi
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
     lda respawn_pending
     cmp #1
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
     lda player_x_hi
     cmp #$20                ; player is not moved before the camera reset
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
 @finish_respawn:
     jsr game_update         ; eight rows per call; A then B at camera zero
     lda game_state
@@ -1289,21 +1327,41 @@ autotest_damage_cycle:
     jmp @respawn_fail
 @respawn_ready:
     lda respawn_pending
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
     lda player_x_hi
     cmp #$04
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
     lda game_state
     cmp #GAME_LOAD_READY
-    bne @respawn_fail
+    beq :+
+    jmp @respawn_fail
+:
     lda #GAME_PLAY
     sta game_state
     lda #0
     sta damage_cooldown
     jsr player_damage
     lda #0
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
+    lda #0                  ; second rebuild was covered above; reach last life
+    sta respawn_pending
+    lda #GAME_PLAY
+    sta game_state
     sta damage_cooldown
+    lda #0
     jsr player_damage
+    lda #0
+    sta death_timer
+    sta camera_pixel_lo
+    sta camera_pixel_hi
+    jsr game_update
     rts
 @respawn_fail:
     lda #$8C

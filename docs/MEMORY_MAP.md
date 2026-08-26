@@ -6,7 +6,7 @@
 | `$0801-$084D` | Boot | BASIC `SYS` stub and startup/BSS clearing code |
 | `$1800-$24D2` | Imported SID payload | `Madness (part 1)`, init `$1800`, play `$1806` |
 | `$24D3-$2502` | SID workspace reserve | out-of-payload work cells referenced by the imported player |
-| `$2600-$26AC` | Runtime BSS | frame, input, camera, sprite shadow, player/stance, shot/bomb arc, objects, action hazards, Continue countdown, danger-rank, transition, respawn slicing, merge compatibility and sound state |
+| `$2600-$26AC` | Runtime BSS | frame, input, camera, sprite shadow, player/stance, shot/bomb arc, objects, action hazards, Continue countdown, danger-rank, transition, death presentation, respawn slicing and sound state |
 | `$26AD-$3FFF` | Free main RAM | 6,483 bytes before VIC bank |
 | `$4000-$43FF` | Screen A | active 40x25 matrix |
 | `$4400-$47FF` | Screen B | active hidden/visible scroll buffer |

@@ -16,7 +16,7 @@
 .import camera_pixel_lo, camera_pixel_hi, camera_char
 .import rendered_camera_char, screen_a_char, screen_b_char
 .import visible_buffer, visible_d018, scroll_d016
-.import window_render_target, window_render_respawn_slice
+.import window_render_target, window_render_respawn_slice, scroll_return_update
 .import level_layout_apply, level_layout_begin, level_layout_step
 .import sfx_damage, sfx_level_clear
 
@@ -91,6 +91,10 @@ game_update:
     bne :+
     jmp @briefing
 :
+    cmp #GAME_DEATH
+    bne :+
+    jmp @death
+:
     cmp #GAME_LEVEL_CLEAR
     bne :+
     jmp @level_clear
@@ -124,6 +128,34 @@ game_update:
 :
     jsr player_level_start
     jsr objects_init
+    jmp begin_level_load
+
+@death:
+    lda death_timer
+    beq @death_return
+    dec death_timer
+    rts
+@death_return:
+    jsr scroll_return_update
+    lda camera_pixel_lo
+    ora camera_pixel_hi
+    beq @death_arrived
+    rts
+@death_arrived:
+    lda lives
+    bne @death_respawn
+    lda #GAME_CONTINUE
+    sta game_state
+    rts
+@death_respawn:
+    lda #50                 ; recovery protection begins at the actual spawn
+    sta damage_cooldown
+    lda #1
+    sta respawn_pending
+    lda #0
+    sta respawn_render_row
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
     jmp begin_level_load
 
 @game_over:
@@ -360,29 +392,30 @@ player_damage:
     jsr sfx_damage
     inc player_deaths
     lda lives
-    beq @game_over_state
+    beq @last_life
     dec lives
-    beq @game_over_state
+    beq @last_life
     lda #50
     sta damage_cooldown
-    lda #1
-    sta respawn_pending
-    lda #0                  ; do not publish the old position during the rebuild
-    sta respawn_render_row
-    sta sprite_enable_shadow
-    sta sprite_msb_shadow
-    jmp begin_level_load    ; reset camera now; spawn after Screen A/B are ready
-@game_over_state:
-    lda #0
-    sta respawn_pending
+    jmp @begin_death
+@last_life:
     lda #9
     sta continue_seconds
     lda #50
     sta continue_tick
-    lda #GAME_CONTINUE
-    sta game_state
     inc game_over_count
     lda #0
     sta damage_cooldown
+@begin_death:
+    lda sprite_enable_shadow
+    and #$01                ; keep only the player for the impact flicker
+    sta sprite_enable_shadow
+    lda sprite_msb_shadow
+    and #$01
+    sta sprite_msb_shadow
+    lda #25                 ; half-second impact/flicker before camera travel
+    sta death_timer
+    lda #GAME_DEATH
+    sta game_state
 @done:
     rts

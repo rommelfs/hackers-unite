@@ -21,14 +21,28 @@ for path in SOURCE_FILES:
 scroll = (ROOT / "src/scroll.s").read_text()
 if '.import respawn_render_row' not in scroll:
     errors.append("src/scroll.s: missing Phase 13 respawn_render_row import")
-if "death_timer" in scroll and ".import respawn_render_row, death_timer" not in scroll:
-    errors.append("src/scroll.s: death_timer compatibility reference lacks its import")
+if ".import respawn_render_row, death_timer" not in scroll:
+    errors.append("src/scroll.s: missing Phase 13 death-return state imports")
+if "scroll_return_update:" not in scroll or "jmp scroll_publish" not in scroll:
+    errors.append("src/scroll.s: incomplete Phase 13 camera-return publisher")
 if '.segment "CODE3"' not in scroll:
     errors.append("src/scroll.s: missing Phase 13 CODE3 respawn renderer")
 
 state = (ROOT / "src/state.s").read_text()
 if ".export respawn_pending, respawn_render_row, death_timer" not in state:
     errors.append("src/state.s: incomplete Phase 13 respawn state export")
+
+constants = (ROOT / "src/constants.inc").read_text()
+if "GAME_DEATH       = 10" not in constants:
+    errors.append("src/constants.inc: missing GAME_DEATH state")
+
+game = (ROOT / "src/game.s").read_text()
+if "@death:" not in game or "sta death_timer" not in game:
+    errors.append("src/game.s: incomplete Phase 13 death presentation")
+
+sprites = (ROOT / "src/sprites.s").read_text()
+if ".import game_state, death_timer" not in sprites:
+    errors.append("src/sprites.s: missing death-flicker state imports")
 
 for config in ("cfg/c64.cfg", "cfg/c64-test.cfg"):
     if 'CODE3:    load = TUNE,      type = ro, start = $5800;' not in (
