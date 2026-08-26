@@ -121,6 +121,15 @@ frame_loop:
     jmp @wait
 :
 .endif
+    ; Phase 13 deliberately stretches damage recovery across impact, camera
+    ; return, and sliced Screen A/B rebuild frames. The frame-count threshold can
+    ; therefore land inside GAME_DEATH or a loader state, where a hidden player
+    ; sprite is correct. Begin snapshot assertions only on the next settled play
+    ; frame; the dedicated recovery test below verifies the intermediate states.
+    lda game_state
+    beq :+
+    jmp @wait
+:
     lda #$40
     sta test_fail_code
     lda static_map+(2*64)+2
@@ -243,10 +252,18 @@ frame_loop:
     bne :+
     jmp @fail
 :
-    lda VIC_SPR_ENABLE
+    ; GAME_LOAD_READY becomes GAME_PLAY before the next line-48 IRQ publishes
+    ; the newly visible sprite shadow. Treat that single publication gap as test
+    ; readiness, but still fail if the settled gameplay shadow itself is hidden.
+    lda sprite_enable_shadow
     and #$01
     bne :+
     jmp @fail
+:
+    lda VIC_SPR_ENABLE
+    and #$01
+    bne :+
+    jmp @wait
 :
     lda VIC_SPR_X_MSB
     and #$01
