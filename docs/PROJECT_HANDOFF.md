@@ -31,7 +31,24 @@ The user values actual playability over a technically animated proof of concept.
 
 When reporting completion, lead with what is playable and what was verified. Do not describe a static diagnostic screen as a game milestone.
 
-## Current implementation: Phase 11
+## Current implementation: Phase 12 narrative-shell increment
+
+Phase 12 has begun. Cold boot presents a `HACK.LU 2026` mission briefing naming
+the stage goal and three fictional PoC components; Fire enters gameplay through a
+staged Screen A/B rebuild. The player and object sprites are hidden on the briefing,
+AUTOTEST bypasses it, and the live item field identifies `FOYER`, `HACKLU`, or
+`STAGE`. See `docs/PHASE_12_REPORT.md`.
+
+The expanded hotel and conference route manifest is not implemented. Runtime
+gameplay beneath the narrative shell remains the Phase-11 three-layout foundation.
+
+The latest Phase-12 readability pass gives every landable elevated metatile a
+continuous bright lip and full-height supports, makes walls closed and cross-braced,
+and removes non-colliding fallen-chair decoration from the foot line. The asset
+manifest and validator enforce explicit solid/hazard/decoration groups. Damage
+recovery now freezes gameplay, resets the camera, rebuilds Screen A and Screen B at
+the section start in eight-row slices, and only then places and republishes the
+player spawn. Do not collapse those slices back into a full live-frame render.
 
 Phases 1-11 are implemented.
 
@@ -165,7 +182,12 @@ Current release artifacts:
 - `release/hackers-unite.map`
 - `release/hackers-unite.lbl`
 
-The authorized SID payload occupies `$1800-$24D2` and reserves work cells through `$2502`. Runtime BSS is `$2600-$26A9`, projectile code is `$5500-$5754`, primary game code is `$6000-$7E2E`, and read-only data is `$8000-$A200`. BASIC ROM is disabled after startup so automated code at `$B000` is visible; KERNAL and I/O remain mapped.
+The authorized SID payload occupies `$1800-$24D2` and reserves work cells through
+`$2502`. Runtime BSS begins at `$2600`, projectile code remains fixed at
+`$5500-$5754`, the Phase-13 sliced respawn renderer has its own linker window at
+`$5800`, primary game code begins at `$6000`, and read-only data begins at `$8000`.
+BASIC ROM is disabled after startup so automated code at `$B000` is visible;
+KERNAL and I/O remain mapped.
 
 ## Important files
 
@@ -229,12 +251,39 @@ Phase 11 supplies a third themed action world and a projectile-pattern boss, but
 
 The project directory currently has no Git repository. Create version control before broad future changes if the user approves; do not assume rollback is available.
 
-## Recommended next milestone: Phase 12
+## Recommended next Phase-12 increment
 
-Phase 12 should focus on presentation and authored variety: a title/attract screen, a dedicated ending, and more geometry variants within the three worlds. If the goal is materially more simultaneous enemies or action objects, design and budget an explicit sprite multiplexer first; do not silently overbook the existing eight-sprite publication contract.
+The approved redesign direction is formalized in `docs/GAME_REDESIGN.md`: the
+player travels from a hotel origin through recognizable hack.lu conference spaces,
+completes a fictional three-part RCE PoC for placeholder Product X, and reaches the
+stage to give the talk. Follow its incremental delivery steps rather than
+attempting a single wholesale conversion.
+
+The campaign remains level-based and now has four proposed origin routes: hotel
+entrance, hotel room, restrooms, or bar. They converge through some or all of the
+hotel corridor, lobby/chill-out area, hack.lu main-room entrance, registration,
+and conference-room/stage route. The supplied hack.lu 2026 identity must make the
+shared conference spaces clearly recognizable without copying a real hotel floor
+plan or depicting real people. Because the runtime currently has only three
+layouts, first build a three-level vertical slice; expanded route-manifest,
+loading, persistence, memory, and test work must precede the full location list.
+
+New and even grotesque fictional enemy families are allowed when they add readable
+behavior, fit the fixed budgets, and preserve a validated damage-free mandatory
+route.
+
+Phase 12 should begin with the route manifest, narrative shell, and HUD, followed
+by the reusable hack.lu identity kit and the three-layout vertical slice. If the
+goal is materially more simultaneous enemies or action objects, design and budget
+an explicit sprite multiplexer first; do not silently overbook the existing
+eight-sprite publication contract.
 
 ## Suggested first prompt in the new session
 
 ```text
-Read AGENTS.md and docs/PROJECT_HANDOFF.md completely. Inspect the current Phase 11 implementation and test harness. Then propose Phase 12 around title/ending presentation and greater authored layout variety, preserving all scrolling, collision, persistence, audiovisual and PAL timing tests.
+Read AGENTS.md, docs/PROJECT_HANDOFF.md, and docs/GAME_REDESIGN.md completely.
+Inspect the Phase-12 narrative shell, Phase-11 gameplay foundation, and test
+harness. Then implement and validate the selected three-layout route slice,
+preserving all scrolling, collision, persistence, audiovisual, memory-layout, and
+PAL timing contracts.
 ```
