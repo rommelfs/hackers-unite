@@ -1,6 +1,8 @@
 # Hackers Unite
 
-Native C64 platform game, built from scratch with ca65/ld65. The current milestone is **Phase 11: a three-world endless run with classic action hazards and boss projectiles**.
+Native C64 platform game, built from scratch with ca65/ld65. The current milestone
+is **Phase 13: readable collision affordances and camera-first sliced respawning on
+top of the Phase-12 hack.lu briefing**.
 
 ## Requirements
 
@@ -21,6 +23,11 @@ make assets  # regenerate C64 previews and motif crops
 make validate-assets # verify charset, metatiles, colors, flags and map
 make clean
 ```
+
+Packed C64 assets are regenerated from `tools/build_c64_assets.py` through one
+build stamp. Pull requests therefore only need to carry the text generator change;
+`make build`, `make test`, `make soak`, and `make validate-assets` recreate the
+derived binary files before consuming them.
 
 The debug build visualizes main-loop work in the border. The release build removes those writes at assembly time. Joystick port 2 is sampled once per video frame; opposite directions resolve to neutral.
 
@@ -76,5 +83,7 @@ Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of
 - exact 28x17-pixel boss weak-core window; blind floor-height shots miss
 - high and descending ballistic bombs with dedicated artwork
 - full-height 16-pixel spike and electrical warning silhouettes
+- cold-boot `HACK.LU 2026` mission briefing with a staged transition into gameplay
+- `FOYER`/`HACKLU`/`STAGE` objective labels for the current three-layout slice
 
-See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_11_REPORT.md](docs/PHASE_11_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
+See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
