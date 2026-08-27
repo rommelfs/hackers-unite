@@ -9,6 +9,7 @@
 .import player_x_lo, player_x_hi, player_y_lo, player_y_hi
 .import player_vx, player_vy, player_grounded, player_frame, player_anim_timer
 .import player_airborne_entry
+.import speed_timer
 .import player_stance, player_facing, crouch_frames, crawl_frames
 .import test_x_lo, test_x_hi, test_y_lo, test_y_hi
 .import collision_landings, player_respawns, running_jumps, high_landings, scroll_direction
@@ -184,6 +185,17 @@ horizontal_input:
     lda #MAX_SPEED
 :
     sta player_vx
+    lda speed_timer
+    beq :+
+    lda player_vx
+    clc
+    adc #4
+    cmp #33
+    bcc @boost_right_store
+    lda #32
+@boost_right_store:
+    sta player_vx
+:
     lda #1
     sta player_facing
     rts
@@ -203,6 +215,17 @@ horizontal_input:
     lda #($100-MAX_SPEED)
 :
     sta player_vx
+    lda speed_timer
+    beq :+
+    lda player_vx
+    sec
+    sbc #4
+    cmp #($100-32)
+    bcs @boost_left_store
+    lda #($100-32)
+@boost_left_store:
+    sta player_vx
+:
     lda #$FF
     sta player_facing
     rts
