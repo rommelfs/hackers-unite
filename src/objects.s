@@ -1052,6 +1052,14 @@ object_render:
     lda #$52
     bne @store_pointer
 @normal_pointer:
+    cpx #4
+    bne :+
+    jsr object_type_for_level
+    cmp #TYPE_ONEUP
+    bne :+
+    lda #$49               ; energy-token silhouette, distinct from speed icon
+    bne @store_pointer
+:
     lda object_pointers,x
 @store_pointer:
     sta SCREEN_A+$3F9,x
