@@ -39,6 +39,8 @@ if "GAME_DEATH       = 10" not in constants:
 game = (ROOT / "src/game.s").read_text()
 if "@death:" not in game or "sta death_timer" not in game:
     errors.append("src/game.s: incomplete Phase 13 death presentation")
+if "lda #GAME_LOAD_READY\n    sta game_state\n    rts" not in game:
+    errors.append("src/game.s: respawn loader can fall through past GAME_LOAD_READY")
 
 sprites = (ROOT / "src/sprites.s").read_text()
 if ".import game_state, death_timer" not in sprites:

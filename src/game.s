@@ -281,6 +281,7 @@ game_update:
 :
     lda #GAME_LOAD_READY
     sta game_state
+    rts                     ; never fall through into the GAME_COMPLETE handler
 
 ; Keep this handler beside @done so the two-byte conditional branch remains in
 ; range without spending another byte in the completely full CODE window.
