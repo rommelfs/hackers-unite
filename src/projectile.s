@@ -12,6 +12,7 @@
 .import sprite_xy_shadow, sprite_enable_shadow, sprite_msb_shadow
 .import test_x_hi, test_y_hi, projectile_collision_test
 .import objects_projectile_hit
+.import rapid_timer, strong_timer
 
 .segment "CODE2"
 projectile_init:
@@ -92,6 +93,11 @@ projectile_update:
     lda #2
     bne @horizontal_speed
 @straight_speed:
+    lda strong_timer
+    beq :+
+    lda #6
+    bne @horizontal_speed
+:
     lda #4
 @horizontal_speed:
     sta test_y_hi
@@ -243,7 +249,13 @@ projectile_spawn:
     lda #48
 @store_lifetime:
     sta projectile_lifetime
+    lda rapid_timer
+    beq :+
+    lda #4
+    bne @store_cooldown
+:
     lda #10
+@store_cooldown:
     sta projectile_cooldown
     lda #1
     sta projectile_active
@@ -320,6 +332,11 @@ projectile_render:
     sta SCREEN_A+$3F8,x
     sta SCREEN_B+$3F8,x
     lda projectile_mode
+    beq :+
+    lda #COLOR_WHITE
+    bne @store_color
+:
+    lda strong_timer
     beq :+
     lda #COLOR_WHITE
     bne @store_color
