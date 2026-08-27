@@ -1042,6 +1042,14 @@ object_render:
     lda #$52
     bne @store_pointer
 @normal_pointer:
+    cpx #4
+    bne :+
+    jsr object_type_for_level
+    cmp #TYPE_ONEUP
+    bne :+
+    lda #$49               ; energy-token silhouette, distinct from speed icon
+    bne @store_pointer
+:
     lda object_pointers,x
 @store_pointer:
     sta SCREEN_A+$3F9,x
@@ -1071,6 +1079,10 @@ l2_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
                      .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
 l3_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
                      .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
+                     .byte TYPE_ONEUP, TYPE_ENEMY, TYPE_ENEMY
+object_types_l3:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
+                     .byte TYPE_ONEUP, TYPE_ENEMY, TYPE_ENEMY
 object_bits:         .byte $01, $02, $04, $08, $10, $20, $40
 object_bits_plus_one: .byte $02, $04, $08, $10, $20, $40, $80
 object_pointers:     .byte $44, $45, $46, $47, $44, $44, $50
