@@ -13,6 +13,7 @@ finale_begin:
     sta projectile_active
     sta boss_shot_active
     sta finale_step
+    sta applause_events
     lda #50
     sta finale_timer
     lda #GAME_FINALE_WALK

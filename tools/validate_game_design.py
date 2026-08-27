@@ -7,6 +7,7 @@ constants = (root / "src/constants.inc").read_text()
 objects = (root / "src/objects.s").read_text()
 powerups = (root / "src/powerups.s").read_text()
 finale = (root / "src/finale.s").read_text()
+scheduler = (root / "src/scheduler_phase3.s").read_text()
 assets = (root / "tools/build_c64_assets.py").read_text()
 for name in ("POWER_RAPID", "POWER_STRONG", "POWER_SPEED", "POWER_EXTRA_LIFE"):
     assert name in constants and name in powerups, f"missing power-up {name}"
@@ -29,6 +30,9 @@ assert "inc extra_lives_collected" in powerups
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"GAME_FINALE_{state}" in constants
 assert "sta projectile_active" in finale and "sta boss_shot_active" in finale
+for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
+    assert f"cmp #GAME_FINALE_{state}" in scheduler
+assert "lda applause_events" in scheduler
 # ca65 cheap-local labels are scoped by the previous non-local label. The object
 # type helper must not split object_collide from its later @enemy/@boss handlers.
 collide = objects.index("object_collide:")
