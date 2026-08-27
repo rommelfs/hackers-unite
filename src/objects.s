@@ -23,12 +23,15 @@
 .import sprite_xy_shadow, sprite_enable_shadow, sprite_msb_shadow
 .import sfx_pickup, sfx_enemy
 .import projectile_x_lo, projectile_x_hi, projectile_y
+.import powerup_collect
+.import strong_timer
 
 OBJECT_COUNT = 7
 TYPE_ENEMY = 0
 TYPE_KEY = 1
 TYPE_BONUS = 2
 TYPE_ONEUP = 3
+TYPE_POWER = 4
 
 .segment "CODE"
 objects_sprite_init:
@@ -171,7 +174,7 @@ objects_update:
     lda object_bits,x
     and object_persistence
     bne @sleep
-    lda object_types,x
+    jsr object_type_for_level
     cmp #TYPE_ENEMY
     bne :+
     jsr enemy_update
@@ -600,7 +603,8 @@ object_collide:
     adc #1
 :
     sta object_temp_lo
-    ldy object_types,x
+    jsr object_type_for_level
+    tay
     cpy #TYPE_ENEMY
     bne @item_y
     lda object_temp_lo
@@ -620,7 +624,7 @@ object_collide:
     sta object_persistence
     inc objects_collected
     jsr sfx_pickup
-    lda object_types,x
+    jsr object_type_for_level
     cmp #TYPE_KEY
     bne @bonus
     lda #10
@@ -633,9 +637,7 @@ object_collide:
     jsr add_score
     rts
 @oneup:
-    inc lives
-    lda #100
-    jsr add_score
+    jsr powerup_collect
     rts
 
 @boss_player_y_box:
@@ -750,6 +752,35 @@ object_collide:
 @no_hit:
     rts
 
+; X is stable object ID. Each layout selects pickup meaning from one compact
+; table, keeping collision, artwork and effect policy synchronized. Keep this
+; helper outside object_collide: ca65 cheap-local labels belong to the preceding
+; non-local scope, so placing it inside that routine hides later @enemy labels.
+object_type_for_level:
+    lda level_number
+    cmp #2
+    beq @level_two_type
+    cmp #3
+    beq @level_three_type
+    txa
+    tay
+    lda object_type_table,y
+    rts
+@level_two_type:
+    txa
+    clc
+    adc #OBJECT_COUNT
+    tay
+    lda object_type_table,y
+    rts
+@level_three_type:
+    txa
+    clc
+    adc #(OBJECT_COUNT*2)
+    tay
+    lda object_type_table,y
+    rts
+
 ; Deterministic harness entry. X selects any enemy ID and production behavior
 ; still uses the same AABB path.
 objects_test_enemy_collision:
@@ -856,6 +887,13 @@ objects_projectile_hit:
     bcc @skip
     cmp #25
     bcs @skip
+    lda strong_timer
+    beq :+
+    lda boss_hp             ; power shot deals two core damage in one hit event
+    cmp #2
+    bcc :+
+    dec boss_hp
+:
     jsr boss_take_hit
     rts
 @skip:
@@ -978,6 +1016,13 @@ object_render:
     bne @store_color
 :
 @normal_color:
+    jsr object_type_for_level
+    cmp #TYPE_ENEMY
+    beq :+
+    lda frame_counter_lo    ; every pickup pulses white without relying on hue
+    and #8
+    bne @pickup_white
+:
     lda level_number
     cmp #3
     bne :+
@@ -1013,6 +1058,9 @@ object_render:
     sta SCREEN_B+$3F9,x
 @done:
     rts
+@pickup_white:
+    lda #COLOR_WHITE
+    bne @store_color
 
 .segment "RODATA"
 ; IDs 1-3 are the speaker kit: conference badge, slide deck and emergency
@@ -1027,8 +1075,15 @@ object_level3_x_hi:  .byte >180, >280, >520, >760, >650, >656, >900
 object_initial_y:    .byte 139, 139, 139, 139, 139, 105, 139
 object_level2_y:     .byte 139, 91, 91, 91, 139, 105, 118
 object_level3_y:     .byte 139, 91, 91, 75, 139, 16, 139
-object_types:        .byte TYPE_ENEMY, TYPE_KEY, TYPE_BONUS, TYPE_ONEUP
-                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+; One contiguous table avoids ca65 symbol/debug-size collisions between three
+; similarly named RODATA labels. Rows are L1, L2 and L3, seven stable IDs each.
+object_type_table:
+    .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
+    .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+    .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+    .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+    .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+    .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
 object_bits:         .byte $01, $02, $04, $08, $10, $20, $40
 object_bits_plus_one: .byte $02, $04, $08, $10, $20, $40, $80
 object_pointers:     .byte $44, $45, $46, $47, $44, $44, $50

@@ -41,6 +41,8 @@
 .import respawn_pending, death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
+.import powerups_update
+.import finale_timer, applause_events
 
 .segment "CODE"
 frame_loop:
@@ -61,6 +63,7 @@ frame_loop:
 .endif
     jsr input_update
     jsr game_update
+    jsr powerups_update
     jsr sound_update
 .ifdef DEBUG_BUILD
     lda #COLOR_BLUE
@@ -369,6 +372,9 @@ frame_loop:
 :
     lda #JOY_FIRE
     sta joy_pressed
+    lda #1
+    sta projectile_active
+    sta boss_shot_active
     lda #1
     sta main_busy
     jsr game_update
@@ -874,6 +880,57 @@ frame_loop:
     jsr autotest_finish_layout
     lda #$87
     sta test_fail_code
+    lda game_state
+    cmp #GAME_FINALE_WALK
+    beq :+
+    jmp @fail
+:
+    lda projectile_active
+    ora boss_shot_active
+    beq :+
+    jmp @fail
+:
+    lda #0
+    sta joy_pressed
+    sta finale_timer
+    jsr game_update
+    lda game_state
+    cmp #GAME_FINALE_SCREEN
+    beq :+
+    jmp @fail
+:
+    lda #0
+    sta finale_timer
+    jsr game_update
+    lda game_state
+    cmp #GAME_FINALE_DEMO
+    beq :+
+    jmp @fail
+:
+    lda #0
+    sta finale_timer
+    jsr game_update
+    lda game_state
+    cmp #GAME_FINALE_APPLAUSE
+    beq :+
+    jmp @fail
+:
+    lda applause_events
+    cmp #1
+    beq :+
+    jmp @fail
+:
+    lda #0
+    sta finale_timer
+    jsr game_update
+    lda game_state
+    cmp #GAME_FINALE_RESULT
+    beq :+
+    jmp @fail
+:
+    lda #JOY_FIRE
+    sta joy_pressed
+    jsr game_update
     lda game_state
     cmp #GAME_COMPLETE
     beq :+

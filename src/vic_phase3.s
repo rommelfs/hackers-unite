@@ -17,6 +17,8 @@
 .import screen_a_char, screen_b_char, player_x_lo, player_x_hi
 .import player_stance
 .import sprite_enable_shadow, sprite_msb_shadow
+.import power_weapon, rapid_timer, strong_timer, speed_timer
+.import finale_render
 
 .segment "CODE"
 vic_init:
@@ -167,6 +169,11 @@ status_init:
     rts
 
 ui_update:
+    lda game_state
+    cmp #GAME_FINALE_WALK
+    bcc :+
+    jsr finale_render
+:
     lda score_hi
     jsr put_hex_score_hi
     lda score_lo
@@ -361,9 +368,16 @@ ui_update:
     cpx #9
     bne @exit_loop
 @state_done:
-    lda frame_counter_lo
-    jsr put_hex_frame
-    lda dropped_frames
+    ldx power_weapon
+    lda weapon_chars,x
+    sta SCREEN_A+(24*40)+17
+    sta SCREEN_B+(24*40)+17
+    lda strong_timer
+    bne @timer
+    lda rapid_timer
+    bne @timer
+    lda speed_timer
+@timer:
     jsr put_hex_drop
     rts
 
@@ -442,7 +456,7 @@ put_hex_drop:
 .segment "RODATA"
 status_text:
     .byte 19,3,15,18,5,0,27,27,27,27,0,12,0,30,0
-    .byte 6,0,27,27,0,4,0,27,27,0,0,0,0,0,0
+    .byte 23,0,19,0,20,0,27,27,0,0,0,0,0,0,0
     .byte 0,0,0,0,0,0,0,0,0,0
 game_over_text:
     .byte 7,1,13,5,0,15,22,5,18
@@ -466,6 +480,8 @@ briefing_text:
     .byte 8,1,3,11,40,12,21,0,0       ; HACK.LU
 hex_chars:
     .byte 27,28,29,30,31,32,33,34,35,36,1,2,3,4,5,6
+weapon_chars:
+    .byte 14,18,16              ; N/R/P = normal, rapid, power
 title_hacklu:
     .byte 8,1,3,11,40,12,21,0,29,27,29,33    ; HACK.LU 2026
 title_road:

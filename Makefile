@@ -4,7 +4,7 @@ LD65 := ld65
 C1541 ?= /Applications/Emulators/Vice/bin/c1541
 VICE ?= /Applications/Emulators/Vice/bin/x64sc
 
-SOURCES := startup state assets tiles scroll physics objects boss_attack projectile game sound sprites vic_phase3 input irq_phase3 scheduler_phase3
+SOURCES := startup state assets tiles scroll physics objects boss_attack projectile powerups finale game sound sprites vic_phase3 input irq_phase3 scheduler_phase3
 DEBUG_OBJS := $(addprefix build/debug/,$(addsuffix .o,$(SOURCES)))
 RELEASE_OBJS := $(addprefix build/release/,$(addsuffix .o,$(SOURCES)))
 TEST_OBJS := $(addprefix build/test/,$(addsuffix .o,$(SOURCES)))
@@ -98,6 +98,7 @@ validate-assets: c64-assets
 
 validate-source:
 	python3 tools/validate_source_merge.py
+	python3 tools/validate_game_design.py
 
 release/$(PROJECT).d64: release/$(PROJECT).prg
 	@mkdir -p release
