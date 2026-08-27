@@ -29,13 +29,14 @@ The level is one conference journey in three acts:
 
 Solid geometry has closed silhouettes and bright continuous lips. Background
 chairs are dark and `DECORATION`; open spike/arc shapes are only `HAZARD`; the
-stage has a cyan projection fill. Pickups use stable hardware-sprite IDs with
-different silhouettes, colors and an eight-frame white pulse. Collision remains
+stage has a cyan projection fill. Pickups use three bounded hardware-sprite slots
+with distinct silhouettes, colors and an eight-frame white pulse; the layout table
+selects their meanings. Collision remains
 fixed-box and each persistence bit is set before its effect runs.
 
 ## Power-ups
 
-The `powerup_types` table maps stable IDs to four effects:
+The `powerup_types` table maps each layout's three pickup slots to four effects:
 
 - **Rapid fire:** four-frame reload, five-second duration.
 - **Power shot:** brighter shot moving six instead of four pixels per frame and

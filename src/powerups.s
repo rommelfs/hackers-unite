@@ -1,7 +1,7 @@
 .include "constants.inc"
 
 .export powerups_update, powerups_reset, powerup_collect
-.import game_state, object_index, lives
+.import game_state, level_number, object_index, lives
 .import power_weapon, rapid_timer, strong_timer, speed_timer, power_flash
 .import powerups_collected, extra_lives_collected, powerups_expired
 .import add_score
@@ -59,14 +59,22 @@ powerups_update:
     sta power_weapon
     rts
 
-; Stable IDs are the definition: 1 rapid, 2 strong, 3 speed, 4 extra life.
-; Layout tables decide which of these bounded objects exist in each section.
+; Three stable pickup slots are reused by each staged layout. This compact table
+; supplies all four meanings without stealing IDs 0/4-6 from the enemy tests.
 powerup_collect:
     inc powerups_collected
     lda #12
     sta power_flash
-    ldx object_index
+    ldx level_number
     dex
+    txa
+    asl
+    clc
+    adc level_number        ; 3*level-2
+    clc
+    adc object_index
+    sec
+    sbc #2                  ; (level-1)*3 + (object ID-1)
     tax
     lda powerup_types,x
     cmp #POWER_EXTRA_LIFE
@@ -99,4 +107,6 @@ powerup_collect:
 
 .segment "RODATA"
 powerup_types:
-    .byte POWER_RAPID, POWER_STRONG, POWER_SPEED, POWER_EXTRA_LIFE
+    .byte POWER_RAPID, POWER_STRONG, POWER_SPEED
+    .byte POWER_RAPID, POWER_STRONG, POWER_EXTRA_LIFE
+    .byte POWER_SPEED, POWER_STRONG, POWER_EXTRA_LIFE

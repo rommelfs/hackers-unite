@@ -1075,6 +1075,10 @@ object_level2_y:     .byte 139, 91, 91, 91, 139, 105, 118
 object_level3_y:     .byte 139, 91, 91, 75, 139, 16, 139
 object_types_l1:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
                      .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+object_types_l3:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
 object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
                      .byte TYPE_ONEUP, TYPE_ENEMY, TYPE_ENEMY
 object_types_l3:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER

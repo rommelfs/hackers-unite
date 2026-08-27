@@ -34,8 +34,8 @@ When reporting completion, lead with what is playable and what was verified. Do 
 ## Current implementation: conference-route power-up/finale increment
 
 The three-layout vertical slice now reads as foyer to auditorium chair rows to
-stage rig. Four stable, data-driven pickup IDs implement rapid fire, power shot,
-speed boost and extra life; temporary effects expire after five PAL seconds and
+stage rig. Three bounded pickup slots select four data-driven effects—rapid fire,
+power shot, speed boost and extra life; temporary effects expire after five PAL seconds and
 clear on damage. A five-state frozen talk finale walks to the lectern, activates
 the projector, presents a fictional RCE-success beat, triggers applause, and waits
 at `TALK COMPLETE` for ranked replay. See `docs/CONFERENCE_ROUTE_REPORT.md`.

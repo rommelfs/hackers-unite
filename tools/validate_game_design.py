@@ -10,7 +10,14 @@ finale = (root / "src/finale.s").read_text()
 assets = (root / "tools/build_c64_assets.py").read_text()
 for name in ("POWER_RAPID", "POWER_STRONG", "POWER_SPEED", "POWER_EXTRA_LIFE"):
     assert name in constants and name in powerups, f"missing power-up {name}"
-assert ".byte POWER_RAPID, POWER_STRONG, POWER_SPEED, POWER_EXTRA_LIFE" in powerups
+for row in (
+    ".byte POWER_RAPID, POWER_STRONG, POWER_SPEED",
+    ".byte POWER_RAPID, POWER_STRONG, POWER_EXTRA_LIFE",
+    ".byte POWER_SPEED, POWER_STRONG, POWER_EXTRA_LIFE",
+):
+    assert row in powerups
+assert "object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP" in objects
+assert "                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY" in objects
 assert "ora object_persistence" in objects, "pickup one-shot persistence missing"
 assert "inc extra_lives_collected" in powerups
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
