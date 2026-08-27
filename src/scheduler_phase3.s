@@ -872,24 +872,31 @@ frame_loop:
     jsr autotest_level_exit
     lda #JOY_FIRE
     sta joy_pressed
+    lda #1                  ; prove finale_begin cancels both live attack paths
+    sta projectile_active
+    sta boss_shot_active
     lda #1
     sta main_busy
     jsr game_update
     lda #0
     sta main_busy
     jsr autotest_finish_layout
-    lda #$87
+    lda #$A0                ; finale did not enter at the Level-3 stage clear
     sta test_fail_code
     lda game_state
     cmp #GAME_FINALE_WALK
     beq :+
     jmp @fail
 :
+    lda #$A1                ; finale entry did not quiesce both projectile paths
+    sta test_fail_code
     lda projectile_active
     ora boss_shot_active
     beq :+
     jmp @fail
 :
+    lda #$A2                ; WALK -> SCREEN
+    sta test_fail_code
     lda #0
     sta joy_pressed
     sta finale_timer
@@ -899,6 +906,8 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda #$A3                ; SCREEN -> DEMO
+    sta test_fail_code
     lda #0
     sta finale_timer
     jsr game_update
@@ -907,6 +916,8 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda #$A4                ; DEMO -> APPLAUSE
+    sta test_fail_code
     lda #0
     sta finale_timer
     jsr game_update
@@ -915,11 +926,15 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda #$A5                ; applause cue must be emitted exactly once
+    sta test_fail_code
     lda applause_events
     cmp #1
     beq :+
     jmp @fail
 :
+    lda #$A6                ; APPLAUSE -> RESULT
+    sta test_fail_code
     lda #0
     sta finale_timer
     jsr game_update
@@ -928,6 +943,8 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda #$A7                ; Fire on RESULT hands off to ranked replay
+    sta test_fail_code
     lda #JOY_FIRE
     sta joy_pressed
     jsr game_update

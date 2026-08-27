@@ -33,6 +33,8 @@ assert "sta projectile_active" in finale and "sta boss_shot_active" in finale
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"cmp #GAME_FINALE_{state}" in scheduler
 assert "lda applause_events" in scheduler
+for code in range(0xA0, 0xA8):
+    assert f"lda #${code:02X}" in scheduler, f"missing precise finale failure code ${code:02X}"
 # ca65 cheap-local labels are scoped by the previous non-local label. The object
 # type helper must not split object_collide from its later @enemy/@boss handlers.
 collide = objects.index("object_collide:")

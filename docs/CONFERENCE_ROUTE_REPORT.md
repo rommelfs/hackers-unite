@@ -67,3 +67,8 @@ states, projectile shutdown, ca65 cheap-label scope and central visual roles. Th
 existing PAL smoke/soak harness remains the timing and gameplay gate. This container lacked ca65 and
 x64sc, and its package/network proxy returned HTTP 403, so emulator execution and
 a fresh frame capture must be completed in the normal release environment.
+
+The finale smoke path uses precise debug-cart codes `$A0` through `$A7` for stage
+entry, projectile shutdown, each state edge, the single applause event and replay
+handoff. `$87` is no longer shared by the whole sequence, so a future emulator
+failure identifies the exact violated transition instead of masking it.
