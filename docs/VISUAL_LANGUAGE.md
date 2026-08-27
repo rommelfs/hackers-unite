@@ -1,5 +1,20 @@
 # Visual language
 
+## Gameplay role key
+
+| Role | Shape and motion contract |
+|---|---|
+| Solid floor / chair row / gantry | Continuous bright top lip and closed full-height support; `SOLID` flag |
+| Background audience / equipment | Dark, broken silhouette with no foot-line edge; `DECORATION` flag |
+| Cable / electrical trap | Open spikes or zigzag arc, warning ink, never solid; `HAZARD` flag |
+| Normal / elite enemy | Red patrol silhouette / expanded many-eyed AV silhouette; fixed software boxes |
+| Projectile | Small yellow pulse; power shot is bright and faster, still bounded to one slot |
+| Power-up | Four stable silhouettes and colors plus an eight-frame white pulse |
+| Stage exit | Closed frame around a bright cyan projection field at far right |
+
+Shape, flag and interaction must agree. Color is secondary information and is
+never the sole indication that an object can be collected or causes damage.
+
 The supplied hack.lu 2026 banner and logo crop are the authoritative visual references. Hackers Unite does not reproduce the conference badge or its wording. It extracts a compact game vocabulary from the artwork and recombines it around the game's own title and mechanics.
 
 ## Core motifs

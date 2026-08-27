@@ -41,6 +41,9 @@
 .export continue_seconds, continue_tick, continues_used, continue_timeouts
 .export falling_warning_timer
 .export respawn_pending, respawn_render_row, death_timer
+.export power_weapon, rapid_timer, strong_timer, speed_timer, power_flash
+.export powerups_collected, extra_lives_collected, powerups_expired
+.export finale_timer, finale_step, applause_events
 
 .segment "ZEROPAGE"
 frame_pending:  .res 1
@@ -177,3 +180,14 @@ falling_warning_timer: .res 1
 respawn_pending:       .res 1
 respawn_render_row:    .res 1
 death_timer:           .res 1
+power_weapon:          .res 1
+rapid_timer:           .res 1
+strong_timer:          .res 1
+speed_timer:           .res 1
+power_flash:           .res 1
+powerups_collected:    .res 1
+extra_lives_collected: .res 1
+powerups_expired:      .res 1
+finale_timer:          .res 1
+finale_step:           .res 1
+applause_events:       .res 1
