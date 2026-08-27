@@ -204,6 +204,14 @@ objects_update:
     sta sprite_msb_shadow
     rts
 @hide_all:
+    lda game_state
+    cmp #GAME_BRIEFING
+    bne :+
+    lda #0                  ; the title/briefing owns the complete playfield
+    sta sprite_enable_shadow
+    sta sprite_msb_shadow
+    rts
+:
     lda #$01
     sta sprite_enable_shadow
     lda sprite_msb_shadow
