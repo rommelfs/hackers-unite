@@ -16,6 +16,12 @@ assert "inc extra_lives_collected" in powerups
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"GAME_FINALE_{state}" in constants
 assert "sta projectile_active" in finale and "sta boss_shot_active" in finale
+# ca65 cheap-local labels are scoped by the previous non-local label. The object
+# type helper must not split object_collide from its later @enemy/@boss handlers.
+collide = objects.index("object_collide:")
+no_hit = objects.index("@no_hit:", collide)
+helper = objects.index("object_type_for_level:")
+assert helper > no_hit, "object type helper breaks object_collide cheap-label scope"
 for role in ("SOLID", "HAZARD", "DECORATION"):
     assert role in assets
 for landmark in ("chair_row", "cable_trap", "live_cable", "stage_screen"):

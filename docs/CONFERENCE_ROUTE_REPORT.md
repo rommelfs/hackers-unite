@@ -62,7 +62,7 @@ real target data are shown.
 ## Verification notes
 
 `validate_game_design.py` guards all four types, one-shot persistence, five ending
-states, projectile shutdown and central visual roles. The existing PAL smoke/soak
-harness remains the timing and gameplay gate. This container lacked ca65 and
+states, projectile shutdown, ca65 cheap-label scope and central visual roles. The
+existing PAL smoke/soak harness remains the timing and gameplay gate. This container lacked ca65 and
 x64sc, and its package/network proxy returned HTTP 403, so emulator execution and
 a fresh frame capture must be completed in the normal release environment.

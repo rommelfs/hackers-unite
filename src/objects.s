@@ -640,23 +640,6 @@ object_collide:
     jsr powerup_collect
     rts
 
-; X is stable object ID. Each layout selects pickup meaning from one compact
-; table, keeping collision, artwork and effect policy synchronized.
-object_type_for_level:
-    lda level_number
-    cmp #2
-    beq @l2
-    cmp #3
-    beq @l3
-    lda object_types_l1,x
-    rts
-@l2:
-    lda object_types_l2,x
-    rts
-@l3:
-    lda object_types_l3,x
-    rts
-
 @boss_player_y_box:
     ; Player body is 21 pixels high; the expanded boss body is 42 pixels high.
     ; Touching the top edge is enough for a landing, but a visible gap is not.
@@ -767,6 +750,25 @@ object_type_for_level:
 @damage:
     jsr player_damage
 @no_hit:
+    rts
+
+; X is stable object ID. Each layout selects pickup meaning from one compact
+; table, keeping collision, artwork and effect policy synchronized. Keep this
+; helper outside object_collide: ca65 cheap-local labels belong to the preceding
+; non-local scope, so placing it inside that routine hides later @enemy labels.
+object_type_for_level:
+    lda level_number
+    cmp #2
+    beq @l2
+    cmp #3
+    beq @l3
+    lda object_types_l1,x
+    rts
+@l2:
+    lda object_types_l2,x
+    rts
+@l3:
+    lda object_types_l3,x
     rts
 
 ; Deterministic harness entry. X selects any enemy ID and production behavior
