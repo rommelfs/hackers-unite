@@ -1299,26 +1299,36 @@ autotest_damage_cycle:
     lda #$20
     sta player_x_hi
     jsr player_damage
+    lda #$8C
+    sta test_fail_code
     lda game_state
     cmp #GAME_DEATH
     beq :+
     jmp @respawn_fail
 :
+    lda #$8D
+    sta test_fail_code
     lda death_timer
     cmp #25
     beq :+
     jmp @respawn_fail
 :
+    lda #$8E
+    sta test_fail_code
     lda camera_pixel_lo
     cmp #$40
     beq :+
     jmp @respawn_fail
 :
+    lda #$8F
+    sta test_fail_code
     lda camera_pixel_hi
     cmp #1
     beq :+
     jmp @respawn_fail
 :
+    lda #$90
+    sta test_fail_code
     lda player_x_hi
     cmp #$20                ; impact presentation keeps the death position
     beq :+
@@ -1329,21 +1339,29 @@ autotest_damage_cycle:
     sta camera_pixel_lo      ; skip travel; exercise arrival ordering directly
     sta camera_pixel_hi
     jsr game_update
+    lda #$91
+    sta test_fail_code
     lda game_state
     cmp #GAME_LOAD_A
     beq :+
     jmp @respawn_fail
 :
+    lda #$92
+    sta test_fail_code
     lda camera_pixel_lo
     ora camera_pixel_hi
     beq :+
     jmp @respawn_fail
 :
+    lda #$93
+    sta test_fail_code
     lda respawn_pending
     cmp #1
     beq :+
     jmp @respawn_fail
 :
+    lda #$94
+    sta test_fail_code
     lda player_x_hi
     cmp #$20                ; player is not moved before the camera reset
     beq :+
@@ -1351,6 +1369,8 @@ autotest_damage_cycle:
 :
 @finish_respawn:
     jsr game_update         ; eight rows per call; A then B at camera zero
+    lda #$95
+    sta test_fail_code
     lda game_state
     cmp #GAME_LOAD_READY
     beq @respawn_ready
@@ -1360,15 +1380,21 @@ autotest_damage_cycle:
     beq @finish_respawn
     jmp @respawn_fail
 @respawn_ready:
+    lda #$96
+    sta test_fail_code
     lda respawn_pending
     beq :+
     jmp @respawn_fail
 :
+    lda #$97
+    sta test_fail_code
     lda player_x_hi
     cmp #$04
     beq :+
     jmp @respawn_fail
 :
+    lda #$98
+    sta test_fail_code
     lda game_state
     cmp #GAME_LOAD_READY
     beq :+
@@ -1398,8 +1424,7 @@ autotest_damage_cycle:
     jsr game_update
     rts
 @respawn_fail:
-    lda #$8C
-    sta test_fail_code
+    lda test_fail_code
     sta $D7FF
 @respawn_halt:
     jmp @respawn_halt
