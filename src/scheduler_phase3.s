@@ -41,6 +41,7 @@
 .import respawn_pending, death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
+.import powerups_update
 
 .segment "CODE"
 frame_loop:
@@ -61,6 +62,7 @@ frame_loop:
 .endif
     jsr input_update
     jsr game_update
+    jsr powerups_update
     jsr sound_update
 .ifdef DEBUG_BUILD
     lda #COLOR_BLUE

@@ -31,7 +31,14 @@ The user values actual playability over a technically animated proof of concept.
 
 When reporting completion, lead with what is playable and what was verified. Do not describe a static diagnostic screen as a game milestone.
 
-## Current implementation: Phase 12 narrative-shell increment
+## Current implementation: conference-route power-up/finale increment
+
+The three-layout vertical slice now reads as foyer to auditorium chair rows to
+stage rig. Four stable, data-driven pickup IDs implement rapid fire, power shot,
+speed boost and extra life; temporary effects expire after five PAL seconds and
+clear on damage. A five-state frozen talk finale walks to the lectern, activates
+the projector, presents a fictional RCE-success beat, triggers applause, and waits
+at `TALK COMPLETE` for ranked replay. See `docs/CONFERENCE_ROUTE_REPORT.md`.
 
 Phase 12 has begun. Cold boot presents a `HACK.LU 2026` mission briefing naming
 the stage goal and three fictional PoC components; Fire enters gameplay through a
