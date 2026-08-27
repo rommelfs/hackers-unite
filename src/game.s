@@ -19,6 +19,8 @@
 .import window_render_target, window_render_respawn_slice, scroll_return_update
 .import level_layout_apply, level_layout_begin, level_layout_step
 .import sfx_damage, sfx_level_clear
+.import powerups_reset, finale_begin, finale_update
+.import powerups_collected, extra_lives_collected, powerups_expired
 
 .segment "CODE"
 game_init:
@@ -51,6 +53,10 @@ game_init:
     sta respawn_pending
     sta respawn_render_row
     sta death_timer          ; compatibility only; sliced recovery owns timing
+    sta powerups_collected
+    sta extra_lives_collected
+    sta powerups_expired
+    jsr powerups_reset
 .ifdef PHASE12_PREVIEW
     lda #3
 .else
@@ -76,6 +82,10 @@ game_update:
     dec damage_cooldown
 :
     lda game_state
+    cmp #GAME_FINALE_WALK
+    bcc :+
+    jmp finale_update
+:
     bne :+
     rts
 :
@@ -217,6 +227,7 @@ game_update:
     bne :+
     inc difficulty_rank_hi
 :
+    jsr powerups_reset
     lda level_number
     cmp #3
     beq @campaign_complete
@@ -231,8 +242,7 @@ game_update:
     jmp begin_level_patch
 
 @campaign_complete:
-    lda #GAME_COMPLETE
-    sta game_state
+    jsr finale_begin
     inc level_transitions
     rts
 
@@ -351,6 +361,7 @@ apply_level_palette:
 
 ; Badge, slides and coffee complete the speaker kit. Up enters the far-right
 ; stage/section gate; the auditorium AV boss additionally guards Level 2.
+.segment "CODE3"
 level_exit_update:
     lda game_state
     bne @done
@@ -396,6 +407,7 @@ player_damage:
     lda damage_cooldown
     bne @done
     jsr sfx_damage
+    jsr powerups_reset
     inc player_deaths
     lda lives
     beq @last_life
