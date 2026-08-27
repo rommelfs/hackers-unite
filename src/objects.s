@@ -762,13 +762,23 @@ object_type_for_level:
     beq @level_two_type
     cmp #3
     beq @level_three_type
-    lda l1_object_types,x
+    txa
+    tay
+    lda object_type_table,y
     rts
 @level_two_type:
-    lda l2_object_types,x
+    txa
+    clc
+    adc #OBJECT_COUNT
+    tay
+    lda object_type_table,y
     rts
 @level_three_type:
-    lda l3_object_types,x
+    txa
+    clc
+    adc #(OBJECT_COUNT*2)
+    tay
+    lda object_type_table,y
     rts
 
 ; Deterministic harness entry. X selects any enemy ID and production behavior
@@ -1073,16 +1083,15 @@ object_level3_x_hi:  .byte >180, >280, >520, >760, >650, >656, >900
 object_initial_y:    .byte 139, 139, 139, 139, 139, 105, 139
 object_level2_y:     .byte 139, 91, 91, 91, 139, 105, 118
 object_level3_y:     .byte 139, 91, 91, 75, 139, 16, 139
-l1_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
-                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
-l2_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
-                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
-l3_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
-                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
-object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
-                     .byte TYPE_ONEUP, TYPE_ENEMY, TYPE_ENEMY
-object_types_l3:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
-                     .byte TYPE_ONEUP, TYPE_ENEMY, TYPE_ENEMY
+; One contiguous table avoids ca65 symbol/debug-size collisions between three
+; similarly named RODATA labels. Rows are L1, L2 and L3, seven stable IDs each.
+object_type_table:
+    .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
+    .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+    .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+    .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
+    .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+    .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
 object_bits:         .byte $01, $02, $04, $08, $10, $20, $40
 object_bits_plus_one: .byte $02, $04, $08, $10, $20, $40, $80
 object_pointers:     .byte $44, $45, $46, $47, $44, $44, $50
