@@ -759,16 +759,16 @@ object_collide:
 object_type_for_level:
     lda level_number
     cmp #2
-    beq @l2
+    beq @level_two_type
     cmp #3
-    beq @l3
-    lda object_types_l1,x
+    beq @level_three_type
+    lda l1_object_types,x
     rts
-@l2:
-    lda object_types_l2,x
+@level_two_type:
+    lda l2_object_types,x
     rts
-@l3:
-    lda object_types_l3,x
+@level_three_type:
+    lda l3_object_types,x
     rts
 
 ; Deterministic harness entry. X selects any enemy ID and production behavior
@@ -1073,11 +1073,11 @@ object_level3_x_hi:  .byte >180, >280, >520, >760, >650, >656, >900
 object_initial_y:    .byte 139, 139, 139, 139, 139, 105, 139
 object_level2_y:     .byte 139, 91, 91, 91, 139, 105, 118
 object_level3_y:     .byte 139, 91, 91, 75, 139, 16, 139
-object_types_l1:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
+l1_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
                      .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
-object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+l2_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
                      .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
-object_types_l3:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
+l3_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP
                      .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY
 object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_POWER
                      .byte TYPE_ONEUP, TYPE_ENEMY, TYPE_ENEMY

@@ -16,8 +16,11 @@ for row in (
     ".byte POWER_SPEED, POWER_STRONG, POWER_EXTRA_LIFE",
 ):
     assert row in powerups
-assert "object_types_l2:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP" in objects
+assert "l2_object_types:     .byte TYPE_ENEMY, TYPE_POWER, TYPE_POWER, TYPE_ONEUP" in objects
 assert "                     .byte TYPE_ENEMY, TYPE_ENEMY, TYPE_ENEMY" in objects
+for label in ("l1_object_types:", "l2_object_types:", "l3_object_types:"):
+    assert objects.count(label) == 1, f"object role table must be unique: {label}"
+assert "object_types_l2:" not in objects and "object_types_l3:" not in objects
 assert "ora object_persistence" in objects, "pickup one-shot persistence missing"
 assert "inc extra_lives_collected" in powerups
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
