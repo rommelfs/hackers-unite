@@ -70,3 +70,10 @@ requires ENTRY plus the first patrol, then a focused harness passes all three ki
 IDs through the production fixed-box pickup handler while preserving the live
 player position. This retains pickup-type and persistence coverage without
 pretending the later rewards are already visible.
+
+The first equipped run of that focused harness reached VICE's cycle limit rather
+than the debug cart. The production pickup and power-up handlers are free to
+clobber X, so incrementing X directly after the call did not reliably advance IDs
+1-3 and could loop indefinitely. The harness now saves each stable ID in the
+existing `object_index` scratch byte and restores X before incrementing. A source
+validator enforces the save/restore pair around this test-only loop.

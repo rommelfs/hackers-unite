@@ -1301,6 +1301,7 @@ autotest_collect_foyer_kit:
     pha
     ldx #1
 @pickup:
+    stx object_index
     lda object_x_lo,x
     asl
     asl
@@ -1333,6 +1334,7 @@ autotest_collect_foyer_kit:
     lsr
     sta player_y_hi
     jsr objects_test_object_collision
+    ldx object_index        ; pickup/power-up handlers may clobber X
     inx
     cpx #4
     bne @pickup

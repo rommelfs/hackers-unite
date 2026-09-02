@@ -60,4 +60,6 @@ assert "lda #$16                ; world X 352, Phase-14 cable column 22" in sche
 assert "objects_test_object_collision = object_collide" in objects
 assert "jsr autotest_collect_foyer_kit" in scheduler
 assert "cmp #2" in scheduler[scheduler.index("lda #$51"):scheduler.index("lda #$52")]
+pickup_harness = scheduler[scheduler.index("autotest_collect_foyer_kit:"):scheduler.index("autotest_enemy_exact_stomp:")]
+assert "stx object_index" in pickup_harness and "ldx object_index" in pickup_harness
 print("game design validation: OK (4 power-ups, 5 finale states, visual roles)")
