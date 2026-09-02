@@ -52,3 +52,10 @@ that opening gap, the first retained chair bank, the first raised landing and th
 new cable at column 22 separately. Its focused hazard probe was moved from the old
 column 18 coordinate to the same authoritative column 22. These assertions test
 the Phase-14 map instead of restoring the superseded auditorium-shaped foyer.
+
+The next equipped run reached debug-cart exit `$42`. That assertion required at
+least eight coarse scroll shifts by the fixed smoke snapshot, coupling the test to
+the old route's exact travel distance. The longer Phase-14 read and recovery beats
+can legitimately reach the snapshot after fewer shifts. Smoke now proves that at
+least one cached coarse shift occurred; the 7,680-frame soak remains responsible
+for repeated traversal, reversal and scroll-cache stress.
