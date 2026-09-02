@@ -135,11 +135,36 @@ frame_loop:
 :
     lda #$40
     sta test_fail_code
+    ; Phase 14 opens a broad black sight-line at columns 0-3. The former
+    ; auditorium signature expected a chair at (2,2) and therefore rejected the
+    ; intentional foyer map before any gameplay assertion could run.
     lda static_map+(2*64)+2
+    beq :+
+    jmp @fail
+:
+    lda #$45
+    sta test_fail_code
+    lda static_map+(2*64)+4
     cmp #METATILE_CHAIR_BACK_A
     beq :+
     jmp @fail
 :
+    lda #$46
+    sta test_fail_code
+    lda static_map+(7*64)+7
+    cmp #METATILE_PLATFORM
+    beq :+
+    jmp @fail
+:
+    lda #$47
+    sta test_fail_code
+    lda static_map+(9*64)+22
+    cmp #METATILE_SPIKE
+    beq :+
+    jmp @fail
+:
+    lda #$40
+    sta test_fail_code
     lda static_map+(6*64)+56
     cmp #METATILE_STAGE_FRAME
     beq :+
@@ -291,7 +316,7 @@ frame_loop:
     lda #0
     sta damage_cooldown
     sta player_x_lo
-    lda #$12                ; world X 288, Level-1 spike column 18
+    lda #$16                ; world X 352, Phase-14 cable column 22
     sta player_x_hi
     lda #$B0
     sta player_y_lo

@@ -1072,15 +1072,16 @@ object_render:
 
 .segment "RODATA"
 ; IDs 1-3 are the speaker kit: conference badge, slide deck and emergency
-; coffee/1-Up. The foyer teaches the kit along the main aisle; the later
-; sections move it onto elevated chair rows. IDs 0/4 are conference bugs.
-object_initial_x_lo: .byte <340, <100, <190, <270, <600, <820, <0
-object_initial_x_hi: .byte >340, >100, >190, >270, >600, >820, >0
+; coffee/1-Up. The foyer gives ENTRY on safe ground, then places PAYLOAD and
+; TRIGGER on wide optional-looking reward rows after their mechanics are taught.
+; IDs 0/4 are conference bugs; ID 5 remains the later-rank drone.
+object_initial_x_lo: .byte <340, <156, <436, <756, <600, <820, <0
+object_initial_x_hi: .byte >340, >156, >436, >756, >600, >820, >0
 object_level2_x_lo:  .byte <220, <140, <470, <760, <390, <620, <860
 object_level2_x_hi:  .byte >220, >140, >470, >760, >390, >620, >860
 object_level3_x_lo:  .byte <180, <280, <520, <760, <650, <656, <900
 object_level3_x_hi:  .byte >180, >280, >520, >760, >650, >656, >900
-object_initial_y:    .byte 139, 139, 139, 139, 139, 105, 139
+object_initial_y:    .byte 139, 139, 91, 91, 139, 105, 139
 object_level2_y:     .byte 139, 91, 91, 91, 139, 105, 118
 object_level3_y:     .byte 139, 91, 91, 75, 139, 16, 139
 ; One contiguous table avoids ca65 symbol/debug-size collisions between three

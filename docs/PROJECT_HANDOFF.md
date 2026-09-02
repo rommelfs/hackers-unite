@@ -1,6 +1,6 @@
 # Hackers Unite project handoff
 
-Updated: 2026-08-18
+Updated: 2026-09-02
 
 ## Purpose
 
@@ -32,6 +32,14 @@ The user values actual playability over a technically animated proof of concept.
 When reporting completion, lead with what is playable and what was verified. Do not describe a static diagnostic screen as a game milestone.
 
 ## Current implementation: conference-route power-up/finale increment
+
+Phase 14 rebuilds the foyer as the first platformer-first teaching level without
+changing the confirmed movement model. Its safe opening introduces ENTRY, then a
+patrol, then the first isolated cable; later PAYLOAD and TRIGGER rewards occupy
+wide elevated rows separated by recovery ground. The auditorium restores denser
+chair banks and its own platform rhythm rather than inheriting the foyer layout.
+The reversible layout table now contains 163 records and retains the 16-record
+frozen-frame application cap. See `docs/PHASE_14_REPORT.md`.
 
 The three-layout vertical slice now reads as foyer to auditorium chair rows to
 stage rig. Three bounded pickup slots select four data-driven effects—rapid fire,
@@ -123,7 +131,7 @@ Phases 1-11 are implemented.
 - Fire advances through Level 1, Level 2 and Level 3. Object and mutable-block state reset, player/camera return to the start, and layout patches plus Screen A/B rebuild over frozen loading frames before simulation resumes.
 - Level 2 selects its records from the reversible three-layout table and updates both the authoritative map and expanded character world. Its key, data bonus and 1-Up sit at world `(140,91)`, `(470,91)` and `(760,91)` on three 48-pixel platform tiers that require running jumps.
 - Level 3 is a red/yellow industrial warning world with distinct factory platforms, overhead warning panels, electrical traps, falling debris and a rolling ball. Its key, data bonus and 1-Up sit at world `(280,91)`, `(520,91)` and `(760,75)` on a new traversal route.
-- The three-layout table has 144 seven-byte records. Runtime `LOAD_LAYOUT` applies at most 16 records per frozen frame, followed by `LOAD_A`, `LOAD_B` and `LOAD_READY`; cold boot may apply the complete table before IRQs start.
+- The three-layout table has 163 seven-byte records. Runtime `LOAD_LAYOUT` applies at most 16 records per frozen frame, followed by `LOAD_A`, `LOAD_B` and `LOAD_READY`; cold boot may apply the complete table before IRQs start.
 - The status row identifies `L1`/`L2`/`L3` and the low byte of a persistent 16-bit danger rank as `Rxx`. Every cleared section increments the rank. Completing Level 3 enters a short `SYSTEM OK` state; fire cycles into Level 1 without resetting score, lives or rank.
 - Cycles are endless. Rank 2 adds the drone to Level 1, later thresholds increase patrol and rolling-ball steps, every Level-2 visit increases boss durability up to the byte-sized hardware ceiling, and the boss pattern speeds up at defined thresholds.
 - Level 2 has a three-metatile crawl-only conduit whose upper row blocks standing while its foot corridor remains clear.
@@ -150,7 +158,7 @@ After Phase 8, the user reported that the second enemy survived an apparent land
 
 Phase 11 answers the request for clearer traps and more classic platform action without weakening the fixed-frame architecture. The third world has an unmistakable warning palette and geometry, two distinct static trap graphics, telegraphed falling blocks, a rolling floor hazard and a projectile-firing boss. Action sprites use reserved aligned cells at `$5440-$54FF`; collision remains fixed-box software logic rather than artwork-derived contact.
 
-The original full 148-record layout application missed the PAL line-48 deadline. It was replaced by the staged 16-record loader described above; the current table contains 144 records after the Level-3 readability revision. This is a deliberate performance invariant, not merely transition presentation.
+The original full 148-record layout application missed the PAL line-48 deadline. It was replaced by the staged 16-record loader described above; the current table contains 163 records after the platformer-first foyer split. This is a deliberate performance invariant, not merely transition presentation.
 
 The latest playability pass makes static hazards full-height and brighter through shared background-2 ink, removes the falling block entirely during its warning interval, replaces magnetic boss tracking with bounded back-and-forth patrol, narrows boss damage to its visible core, adds two ballistic bomb throws, and inserts a classic nine-second Continue before final Game Over.
 
