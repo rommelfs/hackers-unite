@@ -218,6 +218,13 @@ for recovery_left, recovery_right in manifest["level1_recovery_spans"]:
     if any(flags[tilemap[9 * map_width + x]] & 2 for x in range(recovery_left, recovery_right + 1)):
         errors.append("foyer recovery span contains a hazard")
 
+# The mutable secret at (10,8) is injected by physics rather than stored in the
+# static map. A solid row-7 platform directly above it creates a 32-pixel wall
+# with no player-height corridor and blocks the mandatory route before scrolling.
+hidden_x, hidden_y = manifest["level1_hidden_block"]
+if flags[tilemap[(hidden_y - 1) * map_width + hidden_x]] & 1:
+    errors.append("foyer stacks solid geometry above the mutable hidden block")
+
 # Every Level-2 objective sits exactly 21 pixels above an authoritative solid
 # platform. The 48-pixel tier is reachable only with the implemented run jump.
 for pickup_x, pickup_y in manifest["level2_pickups"]:

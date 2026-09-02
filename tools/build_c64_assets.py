@@ -233,7 +233,7 @@ world[3][38] = SIGNAL
 # The first raised row is optional; later rows carry required kit and teach the
 # full production run jump with generous take-off and landing space.
 for start, finish, row in (
-    (7, 11, 7), (25, 30, 7), (34, 39, 7),
+    (5, 9, 7), (25, 30, 7), (34, 39, 7),
     (46, 51, 7), (53, 56, 6),
 ):
     for x in range(start, finish):
@@ -561,6 +561,7 @@ OUT.mkdir(parents=True, exist_ok=True)
             "level1_safe_start_end": 10,
             "level1_teaching_enemy_x": 340,
             "level1_recovery_spans": [[23, 24], [44, 45]],
+            "level1_hidden_block": [10, 8],
             "level2_traps": level2_traps,
             "level3_pickups": [[280, 91], [520, 91], [760, 75]],
             "level3_step_platform": [40, 43],

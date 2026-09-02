@@ -32,7 +32,7 @@ first cable, and that the two later required pickups have authoritative elevated
 support.
 
 The layout split increases the reversible three-layout patch table from 144 to
-163 records. Runtime application remains capped at 16 records per frozen loading
+165 records. Runtime application remains capped at 16 records per frozen loading
 frame; no patch application was moved into live gameplay.
 
 ## Environment validation status
@@ -52,3 +52,12 @@ that opening gap, the first retained chair bank, the first raised landing and th
 new cable at column 22 separately. Its focused hazard probe was moved from the old
 column 18 coordinate to the same authoritative column 22. These assertions test
 the Phase-14 map instead of restoring the superseded auditorium-shaped foyer.
+
+The next equipped run exposed debug-cart exit `$42`, correctly reporting that no
+coarse scroll had occurred. The first new row-7 landing covered columns 7-10 while
+the authoritative mutable block still occupies `(10,8)` outside the generated
+map. Together those vertically adjacent solid cells formed a 32-pixel obstruction
+before the camera comfort window. The landing now ends at column 8, leaving the
+secret block isolated and the ground route traversable. Asset validation rejects
+any future solid metatile directly above that hidden block; the smoke test keeps
+its original eight-shift requirement so it continues to detect blocked routes.
