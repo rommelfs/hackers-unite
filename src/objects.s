@@ -1079,8 +1079,8 @@ object_render:
 ; IDs 0/4 are conference bugs; ID 5 remains the later-rank drone.
 object_initial_x_lo: .byte <340, <156, <436, <756, <600, <820, <0
 object_initial_x_hi: .byte >340, >156, >436, >756, >600, >820, >0
-object_level2_x_lo:  .byte <220, <140, <470, <760, <390, <620, <860
-object_level2_x_hi:  .byte >220, >140, >470, >760, >390, >620, >860
+object_level2_x_lo:  .byte <220, <140, <470, <792, <390, <620, <860
+object_level2_x_hi:  .byte >220, >140, >470, >792, >390, >620, >860
 object_level3_x_lo:  .byte <180, <280, <520, <760, <650, <656, <900
 object_level3_x_hi:  .byte >180, >280, >520, >760, >650, >656, >900
 object_initial_y:    .byte 139, 139, 91, 91, 139, 105, 139

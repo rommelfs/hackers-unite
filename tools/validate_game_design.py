@@ -57,6 +57,14 @@ for signature in (
     assert signature in scheduler, f"missing Phase-14 smoke signature {signature}"
 assert "level1_traps = [22, 43]" in assets
 assert "lda #$16                ; world X 352, Phase-14 cable column 22" in scheduler
+for signature in (
+    "static_map+(7*64)+6",
+    "static_map+(6*64)+12",
+    "static_map+(7*64)+29",
+    "static_map+(7*64)+49",
+):
+    assert signature in scheduler, f"missing Phase-15 auditorium signature {signature}"
+assert "<792" in objects and ">792" in objects
 assert "objects_test_object_collision = object_collide" in objects
 assert "jsr autotest_collect_foyer_kit" in scheduler
 assert "cmp #2" in scheduler[scheduler.index("lda #$51"):scheduler.index("lda #$52")]

@@ -442,12 +442,12 @@ frame_loop:
     beq :+
     jmp @fail
 :
-    lda static_map+(6*64)+2
+    lda static_map+(7*64)+6
     cmp #METATILE_PLATFORM
     beq :+
     jmp @fail
 :
-    lda static_map+(7*64)+8
+    lda static_map+(6*64)+12
     cmp #METATILE_PLATFORM
     beq :+
     jmp @fail
@@ -457,7 +457,7 @@ frame_loop:
     beq :+
     jmp @fail
 :
-    lda static_map+(7*64)+47
+    lda static_map+(7*64)+49
     cmp #METATILE_PLATFORM
     beq :+
     jmp @fail
@@ -480,12 +480,12 @@ frame_loop:
     jmp @fail
 :
     lda object_x_lo+3
-    cmp #<760
+    cmp #<792
     beq :+
     jmp @fail
 :
     lda object_x_hi+3
-    cmp #>760
+    cmp #>792
     beq :+
     jmp @fail
 :

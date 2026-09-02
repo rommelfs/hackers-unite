@@ -235,6 +235,29 @@ for pickup_x, pickup_y in manifest["level2_pickups"]:
     platform_top = support_y * 16
     if 160 - platform_top > 48:
         errors.append(f"level 2 pickup at ({pickup_x},{pickup_y}) exceeds run-jump tier")
+
+# Phase 15 authors two explicit upper-route waves over the continuous lower
+# aisle. Validate the complete declared landing surfaces rather than relying on
+# a few smoke-test coordinates that drift whenever the route is recomposed.
+for segment_left, segment_right, segment_row in manifest["level2_upper_segments"]:
+    if segment_left > segment_right or segment_row not in (6, 7):
+        errors.append("level 2 upper-route segment metadata is invalid")
+        continue
+    segment = level2_map[
+        segment_row * map_width + segment_left:
+        segment_row * map_width + segment_right + 1
+    ]
+    if any(not (flags[tile] & 1) for tile in segment):
+        errors.append(
+            f"level 2 upper route is not continuous at row {segment_row}, "
+            f"columns {segment_left}-{segment_right}"
+        )
+for entry in manifest["level2_branch_entries"]:
+    if not (flags[level2_map[7 * map_width + entry]] & 1):
+        errors.append(f"level 2 branch entry {entry} lacks a row-7 approach")
+for rejoin in manifest["level2_rejoins"]:
+    if not (flags[level2_map[7 * map_width + rejoin]] & 1):
+        errors.append(f"level 2 upper route does not rejoin at column {rejoin}")
 for pickup_x, pickup_y in manifest["level3_pickups"]:
     support_x = pickup_x // 16
     support_y = (pickup_y + 21) // 16

@@ -277,8 +277,11 @@ for y in (5, 6, 7):
         if level2_world[y][x] == PLATFORM:
             level2_world[y][x] = EMPTY
 for start, finish, row in (
-    (2, 5, 6), (8, 11, 7), (14, 17, 7), (27, 31, 7),
-    (32, 37, 5), (46, 50, 7), (51, 56, 6),
+    # Two readable upper-route waves sit above the continuous lower aisle. Each
+    # begins and ends on the 48-pixel row-7 tier; row 6 is reached only from a
+    # row-7 approach, never by a blind/impossible ground jump.
+    (6, 11, 7), (12, 18, 6), (20, 26, 6), (28, 33, 7),
+    (35, 40, 7), (41, 47, 6), (48, 54, 7),
 ):
     for x in range(start, finish):
         level2_world[row][x] = PLATFORM
@@ -555,8 +558,11 @@ OUT.mkdir(parents=True, exist_ok=True)
             "level_layout_patch_count": len(level_layout_patches) // 7,
             "level_layout_patch_stride": 7,
             "level1_pickups": [[156, 139], [436, 91], [756, 91]],
-            "level2_pickups": [[140, 91], [470, 91], [760, 91]],
+            "level2_pickups": [[140, 91], [470, 91], [792, 91]],
             "level2_crawl_tunnel": [34, 36],
+            "level2_upper_segments": [[6, 10, 7], [12, 17, 6], [20, 25, 6], [28, 32, 7], [35, 39, 7], [41, 46, 6], [48, 53, 7]],
+            "level2_branch_entries": [6, 35],
+            "level2_rejoins": [32, 53],
             "level1_traps": level1_traps,
             "level1_safe_start_end": 10,
             "level1_teaching_enemy_x": 340,
