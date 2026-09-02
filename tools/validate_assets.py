@@ -271,6 +271,23 @@ if list(level3_map[7 * map_width + step_left : 7 * map_width + step_right + 1]) 
     platform_index
 ] * (step_right - step_left + 1):
     errors.append("level 3 high tier lacks its reachable row-7 approach step")
+for segment_left, segment_right, segment_row in manifest["level3_route_segments"]:
+    segment = level3_map[
+        segment_row * map_width + segment_left:
+        segment_row * map_width + segment_right + 1
+    ]
+    if segment_left > segment_right or segment_row not in (6, 7):
+        errors.append("level 3 route segment metadata is invalid")
+    elif any(not (flags[tile] & 1) for tile in segment):
+        errors.append(
+            f"level 3 route is not continuous at row {segment_row}, "
+            f"columns {segment_left}-{segment_right}"
+        )
+for recovery_left, recovery_right in manifest["level3_recovery_spans"]:
+    if recovery_right - recovery_left < 1:
+        errors.append("level 3 recovery span is too short")
+    if any(flags[level3_map[9 * map_width + x]] & 2 for x in range(recovery_left, recovery_right + 1)):
+        errors.append(f"level 3 recovery span {recovery_left}-{recovery_right} contains a hazard")
 
 hazard_index = manifest["metatile_names"].index("cable_trap")
 if flags[hazard_index] != 2:

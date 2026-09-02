@@ -65,6 +65,13 @@ for signature in (
 ):
     assert signature in scheduler, f"missing Phase-15 auditorium signature {signature}"
 assert "<792" in objects and ">792" in objects
+for signature in (
+    "static_map+(7*64)+11",
+    "static_map+(7*64)+40",
+    "static_map+(6*64)+47",
+    "static_map+(7*64)+54",
+):
+    assert signature in scheduler, f"missing Phase-16 backstage signature {signature}"
 assert "objects_test_object_collision = object_collide" in objects
 assert "jsr autotest_collect_foyer_kit" in scheduler
 assert "cmp #2" in scheduler[scheduler.index("lda #$51"):scheduler.index("lda #$52")]

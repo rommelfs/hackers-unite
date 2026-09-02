@@ -309,7 +309,10 @@ for y in (5, 6, 7):
         if level3_world[y][x] == PLATFORM:
             level3_world[y][x] = EMPTY
 for start, finish, row in (
-    (15, 20, 7), (29, 35, 7), (40, 44, 7), (44, 51, 6), (54, 58, 7),
+    # Backstage mastery route: broad row-7 recovery decks introduce each action
+    # field, then the final wave steps onto a row-6 lighting gantry before
+    # returning to the visible stage approach.
+    (11, 19, 7), (27, 35, 7), (40, 45, 7), (45, 51, 6), (52, 56, 7),
 ):
     for x in range(start, finish):
         level3_world[row][x] = FACTORY_PLATFORM
@@ -571,6 +574,8 @@ OUT.mkdir(parents=True, exist_ok=True)
             "level2_traps": level2_traps,
             "level3_pickups": [[280, 91], [520, 91], [760, 75]],
             "level3_step_platform": [40, 43],
+            "level3_route_segments": [[11, 18, 7], [27, 34, 7], [40, 44, 7], [45, 50, 6], [52, 55, 7]],
+            "level3_recovery_spans": [[10, 11], [24, 25], [39, 40], [54, 55]],
             "level3_spike_traps": level3_spike_traps,
             "level3_electric_traps": level3_electric_traps,
             "level3_falling_lanes": [26, 41, 53],

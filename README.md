@@ -1,8 +1,8 @@
 # Hackers Unite
 
 Native C64 platform game, built from scratch with ca65/ld65. The current milestone
-is **Phase 15: a two-route auditorium built on the platformer-first foyer and
-camera-first recovery foundation**.
+is **Phase 16: a backstage mastery route completing the platformer-first
+foyer/auditorium/stage vertical slice**.
 
 ## Requirements
 
@@ -90,5 +90,7 @@ Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of
   elevated kit rewards and authored recovery ground
 - two-route auditorium pacing: continuous lower recovery aisle, optional upper
   running-jump waves and explicit branch/rejoin landings
+- backstage mastery pacing: grouped warning fields, recovery decks, a reachable
+  lighting gantry and a safe return to the visible stage
 
-See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/PHASE_14_REPORT.md](docs/PHASE_14_REPORT.md), [docs/PHASE_15_REPORT.md](docs/PHASE_15_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
+See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/PHASE_14_REPORT.md](docs/PHASE_14_REPORT.md), [docs/PHASE_15_REPORT.md](docs/PHASE_15_REPORT.md), [docs/PHASE_16_REPORT.md](docs/PHASE_16_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).

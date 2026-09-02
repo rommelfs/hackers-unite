@@ -759,6 +759,26 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda static_map+(7*64)+11
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
+    lda static_map+(7*64)+40
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
+    lda static_map+(6*64)+47
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
+    lda static_map+(7*64)+54
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
     lda #$81
     sta test_fail_code
     lda static_map+(9*64)+8
