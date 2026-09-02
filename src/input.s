@@ -35,20 +35,28 @@ input_update:
     and joy_held
     sta joy_pressed
 
+    ; The shortcut is intentionally standalone. Never drive keyboard columns in
+    ; a frame where joystick 2 is active, avoiding keyboard/joystick ghost paths.
+    lda joy_held
+    beq @scan_cheat
+    lda #0
+    sta cheat_held
+    sta cheat_pressed
+    rts
+@scan_cheat:
     jsr cheat_scan
     rts
 
     ; Direct matrix scan for the standalone Commodore-key development shortcut.
-    ; Preserve both CIA directions and port A so joystick sampling and KERNAL
-    ; assumptions remain unchanged outside this bounded scan.
+    ; Preserve both CIA directions. Do not save port A by reading it: CIA port
+    ; reads include grounded joystick pins, so restoring that value while Right
+    ; is held would latch Right low and make movement stick after release.
 cheat_scan:
     lda cheat_held
     sta cheat_previous
     lda CIA1_DDRA
     pha
     lda CIA1_DDRB
-    pha
-    lda CIA1_PORT_A
     pha
     lda #$FF
     sta CIA1_DDRA
@@ -63,7 +71,7 @@ cheat_scan:
     lda #1
 :
     sta cheat_held
-    pla
+    lda #$FF                ; neutral keyboard column / joystick latch
     sta CIA1_PORT_A
     pla
     sta CIA1_DDRB

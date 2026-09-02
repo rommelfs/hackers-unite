@@ -55,3 +55,15 @@ module now resides in the existing `$5800-$5FFF` `CODE3` window. Scheduler calls
 joystick-first ordering, keyboard semantics and the memory map are unchanged,
 while the primary segment recovers the complete former input routine rather than
 only the scanner body.
+
+## Joystick-latch correction
+
+The first playable build exposed stuck horizontal movement after pressing Right.
+The matrix scan had saved port A by reading it, but CIA reads include the physical
+joystick pins. Saving while Right was grounded and later writing that sampled byte
+back into the output latch kept Right asserted after release. The scan now restores
+the neutral `$FF` column latch before restoring both direction registers. Source
+validation rejects the former read-and-push pattern and requires the neutral
+restore. Because the shortcut is explicitly standalone, keyboard columns are not
+driven at all during frames with active joystick input. Together these guards keep
+the demo shortcut from changing joystick semantics.

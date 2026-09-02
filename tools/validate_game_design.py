@@ -36,6 +36,10 @@ for token in ("terminal_script:", "terminal_scroll:", "ROOT", "finale_script_don
 assert "COMMODORE_COLUMN" in input_source and "COMMODORE_MASK" in input_source
 assert 'jsr cheat_scan' in input_source
 assert '.segment "CODE3"\ninput_update:' in input_source
+assert "lda joy_held\n    beq @scan_cheat" in input_source
+cheat_scan = input_source[input_source.index("cheat_scan:"):]
+assert "lda #$FF                ; neutral keyboard column / joystick latch" in cheat_scan
+assert "lda CIA1_PORT_A\n    pha" not in cheat_scan
 assert "jsr finale_begin         ; Commodore key" in (root / "src/game.s").read_text()
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"cmp #GAME_FINALE_{state}" in scheduler
