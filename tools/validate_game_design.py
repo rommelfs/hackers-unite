@@ -80,6 +80,10 @@ for signature in (
     "static_map+(7*64)+54",
 ):
     assert signature in scheduler, f"missing Phase-16 backstage signature {signature}"
+assert "METATILE_FACTORY_PLATFORM = 34" in constants
+assert scheduler.count("cmp #METATILE_FACTORY_PLATFORM") == 4
+for code in range(0x7C, 0x80):
+    assert f"lda #${code:02X}" in scheduler, f"missing precise backstage failure code ${code:02X}"
 assert "objects_test_object_collision = object_collide" in objects
 assert "jsr autotest_collect_foyer_kit" in scheduler
 assert "cmp #2" in scheduler[scheduler.index("lda #$51"):scheduler.index("lda #$52")]

@@ -42,3 +42,13 @@ Asset, source-merge and game-design validators pass in the implementation
 container. Full assembly, PAL VICE smoke/soak, D64 generation and a PAL screenshot
 remain required in an equipped environment containing `ca65`, `x64sc` and
 `c1541`.
+
+## Equipped smoke follow-up
+
+The first equipped run reported `$7A` because the new route signature compared
+`tech_gantry` cells (metatile 34) with the older `METATILE_FACTORY` constant for
+the decorative `tech_panel` (metatile 32). Runtime geometry was correct; the
+assembly-side symbol was not. `METATILE_FACTORY_PLATFORM` now names index 34, and
+the four sampled route decks use distinct diagnostics `$7C` through `$7F` so a
+future mismatch identifies its exact segment instead of falling back to the
+Level-3 transition code.

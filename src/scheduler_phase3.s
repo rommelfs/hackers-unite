@@ -760,23 +760,31 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda #$7C
+    sta test_fail_code
     lda static_map+(7*64)+11
-    cmp #METATILE_FACTORY
+    cmp #METATILE_FACTORY_PLATFORM
     beq :+
     jmp @fail
 :
+    lda #$7D
+    sta test_fail_code
     lda static_map+(7*64)+40
-    cmp #METATILE_FACTORY
+    cmp #METATILE_FACTORY_PLATFORM
     beq :+
     jmp @fail
 :
+    lda #$7E
+    sta test_fail_code
     lda static_map+(6*64)+47
-    cmp #METATILE_FACTORY
+    cmp #METATILE_FACTORY_PLATFORM
     beq :+
     jmp @fail
 :
+    lda #$7F
+    sta test_fail_code
     lda static_map+(7*64)+54
-    cmp #METATILE_FACTORY
+    cmp #METATILE_FACTORY_PLATFORM
     beq :+
     jmp @fail
 :
