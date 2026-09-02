@@ -42,3 +42,13 @@ and soak tests, D64 generation and an emulator screenshot remain required in an
 equipped environment because `ca65`, `x64sc` and `c1541` are not installed in the
 implementation container. A static packed-charset inspection was used only to
 review composition; it is not a substitute for the mandatory PAL screenshot.
+
+## Smoke-test follow-up
+
+The first equipped-environment run exposed debug-cart exit `$40`: the smoke test
+still required a background chair at foyer metatile `(2,2)`, which Phase 14 had
+intentionally cleared as part of the opening sight-line. The test now verifies
+that opening gap, the first retained chair bank, the first raised landing and the
+new cable at column 22 separately. Its focused hazard probe was moved from the old
+column 18 coordinate to the same authoritative column 22. These assertions test
+the Phase-14 map instead of restoring the superseded auditorium-shaped foyer.
