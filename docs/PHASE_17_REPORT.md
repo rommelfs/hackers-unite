@@ -44,3 +44,12 @@ every frame. The shortcut is intentionally retained as a development/demo aid.
 Host-side source, asset and design validators pass in the implementation
 container. Full assembly, PAL VICE smoke/soak, D64 generation and screenshots of
 boot, scrolling demo and root prompt remain required in an equipped environment.
+
+## Equipped linker follow-up
+
+The first equipped build showed that the already tight `$6000-$7FFF` primary
+`CODE` area overflowed by 11 bytes after adding the Commodore scan. The scan is now
+a `CODE3` subroutine called from the normal input update, moving its bounded CIA
+register work into the existing `$5800-$5FFF` secondary-code window. This recovers
+substantially more than 11 primary-code bytes without changing input order,
+keyboard semantics or the memory map.

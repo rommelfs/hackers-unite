@@ -35,9 +35,14 @@ input_update:
     and joy_held
     sta joy_pressed
 
+    jsr cheat_scan
+    rts
+
     ; Direct matrix scan for the standalone Commodore-key development shortcut.
     ; Preserve both CIA directions and port A so joystick sampling and KERNAL
     ; assumptions remain unchanged outside this bounded scan.
+.segment "CODE3"
+cheat_scan:
     lda cheat_held
     sta cheat_previous
     lda CIA1_DDRA
