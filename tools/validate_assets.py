@@ -196,14 +196,34 @@ for layout_name, layout_map in (("level 1", tilemap), ("level 2", level2_map), (
                 f"at columns {solid_columns}, expected {allowed}"
             )
 
-# Foyer kit items sit on the safe main aisle before its first taught trap.
-for pickup_x, pickup_y in manifest["level1_pickups"]:
+# The foyer teaches one safe ground pickup, then uses two broad elevated rewards.
+for pickup_index, (pickup_x, pickup_y) in enumerate(manifest["level1_pickups"]):
     support_x = pickup_x // 16
     support_y = (pickup_y + 21) // 16
     if not (flags[tilemap[support_y * map_width + support_x]] & 1):
         errors.append(f"foyer kit item at ({pickup_x},{pickup_y}) lacks solid support")
-    if pickup_x >= manifest["level1_traps"][0] * 16:
-        errors.append(f"foyer kit item at ({pickup_x},{pickup_y}) appears after the teaching trap")
+    if pickup_index == 0 and pickup_x >= manifest["level1_traps"][0] * 16:
+        errors.append("foyer ENTRY pickup must precede the first taught trap")
+    if pickup_index > 0 and pickup_y == 139:
+        errors.append("later foyer kit rewards must teach elevated route reading")
+
+safe_start_end = manifest["level1_safe_start_end"]
+if any(flags[tilemap[9 * map_width + x]] & 2 for x in range(safe_start_end + 1)):
+    errors.append("foyer safe start contains a floor hazard")
+if manifest["level1_teaching_enemy_x"] // 16 >= manifest["level1_traps"][0]:
+    errors.append("foyer does not teach its first patrol before its first cable")
+for recovery_left, recovery_right in manifest["level1_recovery_spans"]:
+    if recovery_right - recovery_left < 1:
+        errors.append("foyer recovery span is too short")
+    if any(flags[tilemap[9 * map_width + x]] & 2 for x in range(recovery_left, recovery_right + 1)):
+        errors.append("foyer recovery span contains a hazard")
+
+# The mutable secret at (10,8) is injected by physics rather than stored in the
+# static map. A solid row-7 platform directly above it creates a 32-pixel wall
+# with no player-height corridor and blocks the mandatory route before scrolling.
+hidden_x, hidden_y = manifest["level1_hidden_block"]
+if flags[tilemap[(hidden_y - 1) * map_width + hidden_x]] & 1:
+    errors.append("foyer stacks solid geometry above the mutable hidden block")
 
 # Every Level-2 objective sits exactly 21 pixels above an authoritative solid
 # platform. The 48-pixel tier is reachable only with the implemented run jump.
@@ -215,6 +235,29 @@ for pickup_x, pickup_y in manifest["level2_pickups"]:
     platform_top = support_y * 16
     if 160 - platform_top > 48:
         errors.append(f"level 2 pickup at ({pickup_x},{pickup_y}) exceeds run-jump tier")
+
+# Phase 15 authors two explicit upper-route waves over the continuous lower
+# aisle. Validate the complete declared landing surfaces rather than relying on
+# a few smoke-test coordinates that drift whenever the route is recomposed.
+for segment_left, segment_right, segment_row in manifest["level2_upper_segments"]:
+    if segment_left > segment_right or segment_row not in (6, 7):
+        errors.append("level 2 upper-route segment metadata is invalid")
+        continue
+    segment = level2_map[
+        segment_row * map_width + segment_left:
+        segment_row * map_width + segment_right + 1
+    ]
+    if any(not (flags[tile] & 1) for tile in segment):
+        errors.append(
+            f"level 2 upper route is not continuous at row {segment_row}, "
+            f"columns {segment_left}-{segment_right}"
+        )
+for entry in manifest["level2_branch_entries"]:
+    if not (flags[level2_map[7 * map_width + entry]] & 1):
+        errors.append(f"level 2 branch entry {entry} lacks a row-7 approach")
+for rejoin in manifest["level2_rejoins"]:
+    if not (flags[level2_map[7 * map_width + rejoin]] & 1):
+        errors.append(f"level 2 upper route does not rejoin at column {rejoin}")
 for pickup_x, pickup_y in manifest["level3_pickups"]:
     support_x = pickup_x // 16
     support_y = (pickup_y + 21) // 16
