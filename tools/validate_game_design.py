@@ -45,4 +45,19 @@ for role in ("SOLID", "HAZARD", "DECORATION"):
     assert role in assets
 for landmark in ("chair_row", "cable_trap", "live_cable", "stage_screen"):
     assert landmark in assets
+# Keep the deterministic smoke signature synchronized with the authored Phase-14
+# foyer. These are source-level checks because packed assets are regenerated and
+# deliberately not committed.
+for signature in (
+    "static_map+(2*64)+2",
+    "static_map+(2*64)+4",
+    "static_map+(7*64)+7",
+    "static_map+(9*64)+22",
+):
+    assert signature in scheduler, f"missing Phase-14 smoke signature {signature}"
+assert "level1_traps = [22, 43]" in assets
+assert "lda #$16                ; world X 352, Phase-14 cable column 22" in scheduler
+assert "objects_test_object_collision = object_collide" in objects
+assert "jsr autotest_collect_foyer_kit" in scheduler
+assert "cmp #2" in scheduler[scheduler.index("lda #$51"):scheduler.index("lda #$52")]
 print("game design validation: OK (4 power-ups, 5 finale states, visual roles)")

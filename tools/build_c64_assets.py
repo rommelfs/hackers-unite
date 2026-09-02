@@ -199,9 +199,13 @@ FACTORY_PLATFORM = tile("tech_gantry", [104, 105, 106, 107], [10, 10, 10, 10], S
 
 width, height = 64, 12
 world = [[EMPTY for _ in range(width)] for _ in range(height)]
-# Phase 12 begins at the auditorium entrance. Repeated chair banks fill the
-# depth of the hall, while black aisle gaps keep the foreground route readable.
-aisle_columns = {0, 1, 12, 13, 30, 31, 49, 50, 58, 59, 60, 61, 62, 63}
+# The base layout is the foyer teaching level. Conference seating remains in the
+# background, but broad black sight-lines split it into readable play beats:
+# arrival, first opponent, cable lesson, reward route, and stage approach.
+aisle_columns = {
+    0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 30, 31,
+    40, 41, 51, 52, 58, 59, 60, 61, 62, 63,
+}
 for x in range(width):
     if x % 4 == 1:
         world[0][x] = CABLE_H
@@ -212,22 +216,25 @@ for x in range(width):
     world[10][x] = FLOOR_CRACK if x % 8 == 4 else FLOOR
     world[11][x] = WALL
 
-# Suspended AV details and fallen seats break up the long auditorium without
-# looking collectible or changing the authoritative collision map.
-for x in (11, 29, 48):
+# Suspended AV details mark the boundaries between challenges without looking
+# collectible or changing the authoritative collision map.
+for x in (12, 30, 41, 52):
     world[1][x] = CABLE_V
-for x in (20, 40):
+for x in (21, 42):
     world[3][x] = DRONE
 # Never place non-colliding rubble on the foot line: it looked like a blocking
 # object despite carrying decoration-only flags. The clear aisle is intentional.
 world[8][13] = TERMINAL
+world[8][32] = TERMINAL
 world[3][16] = SIGNAL
+world[3][38] = SIGNAL
 
-# Foreground chair rows are the solid platforms. They are deliberately bright
-# and separated from the darker decorative audience banks behind them.
+# The foyer uses short, separated landings rather than a regular obstacle grid.
+# The first raised row is optional; later rows carry required kit and teach the
+# full production run jump with generous take-off and landing space.
 for start, finish, row in (
-    (2, 5, 7), (14, 17, 7), (25, 29, 7), (32, 37, 5),
-    (45, 49, 7), (52, 57, 5),
+    (5, 9, 7), (25, 30, 7), (34, 39, 7),
+    (46, 51, 7), (53, 56, 6),
 ):
     for x in range(start, finish):
         world[row][x] = PLATFORM
@@ -244,8 +251,10 @@ def stamp_stage(layout: list[list[int]]) -> None:
 
 stamp_stage(world)
 
-# Coiled floor cables introduce the hazard language in the foyer section.
-level1_traps = [18, 38]
+# Two isolated cable fields are each preceded and followed by long safe ground.
+# The first appears only after movement, one pickup, and one patrol have been
+# taught; the second combines the already-known jump with an elevated reward.
+level1_traps = [22, 43]
 for x in level1_traps:
     world[9][x] = SPIKE_TRAP
 
@@ -254,21 +263,25 @@ for x in level1_traps:
 # layout 1 after layout 2 has modified the RAM-backed map.
 level2_world = [row[:] for row in world]
 
-def move_platform(source_y: int, source_xs: range, target_y: int, target_xs: range) -> None:
-    for x in source_xs:
-        if x < 5 or x >= 60:
-            level2_world[source_y][x] = SKY_DENSE_A if (x + source_y) % 2 == 0 else SKY_DENSE_B
-        else:
-            level2_world[source_y][x] = EMPTY
-    for x in target_xs:
-        level2_world[target_y][x] = PLATFORM
+# The auditorium restores denser chair banks and its own regular landing rhythm,
+# so it reads as a new location rather than a palette/label swap of the foyer.
+for x in range(width):
+    if x not in {0, 1, 12, 13, 30, 31, 49, 50, 58, 59, 60, 61, 62, 63}:
+        level2_world[2][x] = SKY_A if x % 2 == 0 else SKY_B
+        level2_world[4][x] = SKY_DENSE_A if x % 2 == 0 else SKY_DENSE_B
+        level2_world[6][x] = SKY_A if x % 2 == 0 else SKY_B
 
-move_platform(7, range(2, 5), 6, range(2, 5))
-for x in range(8, 11):
-    level2_world[7][x] = PLATFORM
-move_platform(7, range(25, 29), 7, range(27, 31))
-move_platform(7, range(45, 49), 7, range(46, 50))
-move_platform(5, range(52, 57), 6, range(51, 56))
+# Remove the foyer-only foreground landings before authoring the auditorium.
+for y in (5, 6, 7):
+    for x in range(2, 57):
+        if level2_world[y][x] == PLATFORM:
+            level2_world[y][x] = EMPTY
+for start, finish, row in (
+    (2, 5, 6), (8, 11, 7), (14, 17, 7), (27, 31, 7),
+    (32, 37, 5), (46, 50, 7), (51, 56, 6),
+):
+    for x in range(start, finish):
+        level2_world[row][x] = PLATFORM
 
 # A low data conduit creates a genuine crawl-only floor route.
 for x in range(34, 37):
@@ -276,7 +289,9 @@ for x in range(34, 37):
 
 # The main seating section combines inherited and additional cable traps around
 # chair-row landings and the hostile AV-boss approach.
-level2_traps = sorted(set(level1_traps + [12, 22, 32, 43, 50]))
+for x in level1_traps:
+    level2_world[9][x] = EMPTY
+level2_traps = [12, 22, 32, 43, 50]
 for x in level2_traps:
     level2_world[9][x] = SPIKE_TRAP
 stamp_stage(level2_world)
@@ -539,10 +554,14 @@ OUT.mkdir(parents=True, exist_ok=True)
             "level_count": 3,
             "level_layout_patch_count": len(level_layout_patches) // 7,
             "level_layout_patch_stride": 7,
-            "level1_pickups": [[100, 139], [190, 139], [270, 139]],
+            "level1_pickups": [[156, 139], [436, 91], [756, 91]],
             "level2_pickups": [[140, 91], [470, 91], [760, 91]],
             "level2_crawl_tunnel": [34, 36],
             "level1_traps": level1_traps,
+            "level1_safe_start_end": 10,
+            "level1_teaching_enemy_x": 340,
+            "level1_recovery_spans": [[23, 24], [44, 45]],
+            "level1_hidden_block": [10, 8],
             "level2_traps": level2_traps,
             "level3_pickups": [[280, 91], [520, 91], [760, 75]],
             "level3_step_platform": [40, 43],
