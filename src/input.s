@@ -2,8 +2,9 @@
 
 .export input_update
 .import joy_raw, joy_held, joy_previous, joy_pressed
+.import cheat_held, cheat_previous, cheat_pressed
 
-.segment "CODE"
+.segment "CODE3"
 input_update:
     lda joy_held
     sta joy_previous
@@ -33,5 +34,43 @@ input_update:
     eor #$FF
     and joy_held
     sta joy_pressed
+
+    jsr cheat_scan
     rts
 
+    ; Direct matrix scan for the standalone Commodore-key development shortcut.
+    ; Preserve both CIA directions and port A so joystick sampling and KERNAL
+    ; assumptions remain unchanged outside this bounded scan.
+cheat_scan:
+    lda cheat_held
+    sta cheat_previous
+    lda CIA1_DDRA
+    pha
+    lda CIA1_DDRB
+    pha
+    lda CIA1_PORT_A
+    pha
+    lda #$FF
+    sta CIA1_DDRA
+    lda #0
+    sta CIA1_DDRB
+    lda #COMMODORE_COLUMN
+    sta CIA1_PORT_A
+    lda CIA1_PORT_B
+    eor #$FF
+    and #COMMODORE_MASK
+    beq :+
+    lda #1
+:
+    sta cheat_held
+    pla
+    sta CIA1_PORT_A
+    pla
+    sta CIA1_DDRB
+    pla
+    sta CIA1_DDRA
+    lda cheat_previous
+    eor #$FF
+    and cheat_held
+    sta cheat_pressed
+    rts

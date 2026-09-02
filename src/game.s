@@ -21,6 +21,7 @@
 .import sfx_damage, sfx_level_clear
 .import powerups_reset, finale_begin, finale_update
 .import powerups_collected, extra_lives_collected, powerups_expired
+.import cheat_pressed
 
 .segment "CODE"
 game_init:
@@ -77,6 +78,10 @@ game_init:
     rts
 
 game_update:
+    lda cheat_pressed
+    beq :+
+    jsr finale_begin         ; Commodore key: development shortcut to full finale
+:
     lda damage_cooldown
     beq :+
     dec damage_cooldown
