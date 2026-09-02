@@ -43,7 +43,8 @@
 .import objects_test_boss_update
 .import objects_test_object_collision
 .import powerups_update
-.import finale_timer, applause_events
+.import finale_timer, applause_events, finale_script_pos, finale_script_done
+.import cheat_pressed
 
 .segment "CODE"
 frame_loop:
@@ -967,6 +968,27 @@ frame_loop:
     beq :+
     jmp @fail
 :
+    lda #$A8                ; complete typewriter script, including two scrolls
+    sta test_fail_code
+    lda #250
+    sta finale_timer
+    lda #200
+    sta test_y_hi
+@finale_script_loop:
+    jsr game_update
+    dec test_y_hi
+    bne @finale_script_loop
+    lda finale_script_done
+    bne :+
+    jmp @fail
+:
+    lda #$A9                ; final visible line is the fictional root prompt
+    sta test_fail_code
+    lda SCREEN_A+(15*40)+7
+    cmp #18                ; R
+    beq :+
+    jmp @fail
+:
     lda #$A4                ; DEMO -> APPLAUSE
     sta test_fail_code
     lda #0
@@ -1126,6 +1148,18 @@ frame_loop:
 :
     lda continue_timeouts
     cmp #1
+    beq :+
+    jmp @fail
+:
+    lda #$AA                ; direct Commodore-key edge enters the full finale
+    sta test_fail_code
+    lda #1
+    sta cheat_pressed
+    jsr game_update
+    lda #0
+    sta cheat_pressed
+    lda game_state
+    cmp #GAME_FINALE_WALK
     beq :+
     jmp @fail
 :

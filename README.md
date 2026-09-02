@@ -1,8 +1,8 @@
 # Hackers Unite
 
 Native C64 platform game, built from scratch with ca65/ld65. The current milestone
-is **Phase 16: a backstage mastery route completing the platformer-first
-foyer/auditorium/stage vertical slice**.
+is **Phase 17: a scrolling fictional stage-console demo and root-prompt finale on
+top of the completed platformer-first vertical slice**.
 
 ## Requirements
 
@@ -35,6 +35,9 @@ The debug build visualizes main-loop work in the border. The release build remov
 The soundtrack is Jesper Jensen's `Madness (part 1)` (1988 Noise), used with permission reported by the project owner. Full attribution and import details are in [docs/CREDITS.md](docs/CREDITS.md).
 
 Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of run-up rises about 52 pixels instead of the standing jump's 31 pixels. Down ducks, down-left/down-right crawls at reduced speed. Fire shoots straight, Fire+Up throws a high bomb arc, and Fire+Down throws a descending bomb; Fire+Up deliberately throws instead of jumping. Collect all three data objects, defeat the Level-2 boss through its central weak core, survive the Level-3 factory gauntlet, reach the portal and press up. Fire advances into the next, harder L1/L2/L3 cycle. After losing the last life, Fire accepts the nine-second Continue and restarts the current section with three lives while preserving score and rank. The camera follows only after the player leaves its horizontal comfort window.
+
+The standalone Commodore key opens the complete finale sequence as a
+development/demo shortcut.
 
 ## Current acceptance
 
@@ -92,5 +95,7 @@ Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of
   running-jump waves and explicit branch/rejoin landings
 - backstage mastery pacing: grouped warning fields, recovery decks, a reachable
   lighting gantry and a safe return to the visible stage
+- staged conference monitor with fictional typewriter PoC output, bounded
+  terminal scrolling, `ROOT@STAGE:#` prompt and blinking cursor
 
-See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/PHASE_14_REPORT.md](docs/PHASE_14_REPORT.md), [docs/PHASE_15_REPORT.md](docs/PHASE_15_REPORT.md), [docs/PHASE_16_REPORT.md](docs/PHASE_16_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
+See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/PHASE_14_REPORT.md](docs/PHASE_14_REPORT.md), [docs/PHASE_15_REPORT.md](docs/PHASE_15_REPORT.md), [docs/PHASE_16_REPORT.md](docs/PHASE_16_REPORT.md), [docs/PHASE_17_REPORT.md](docs/PHASE_17_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).

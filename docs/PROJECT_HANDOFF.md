@@ -33,6 +33,13 @@ When reporting completion, lead with what is playable and what was verified. Do 
 
 ## Current implementation: conference-route power-up/finale increment
 
+Phase 17 replaces the compact finale labels with a bounded 30x16 stage monitor,
+26x8 typewriter terminal, two in-window scrolls, fictional PoC transcript,
+`ROOT@STAGE:#` prompt, cursor and expanded applause/result presentation. A
+standalone Commodore-key edge enters the complete sequence as a demo shortcut;
+the CIA matrix scan restores joystick-facing registers. See
+`docs/PHASE_17_REPORT.md`.
+
 Phase 16 completes the platformer-first vertical slice with a five-deck backstage
 mastery route. Four explicit hazard-free recovery spans separate the grouped
 static warning fields and dynamic falling lanes; the final row-6 lighting gantry

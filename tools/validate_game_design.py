@@ -7,6 +7,7 @@ constants = (root / "src/constants.inc").read_text()
 objects = (root / "src/objects.s").read_text()
 powerups = (root / "src/powerups.s").read_text()
 finale = (root / "src/finale.s").read_text()
+input_source = (root / "src/input.s").read_text()
 scheduler = (root / "src/scheduler_phase3.s").read_text()
 assets = (root / "tools/build_c64_assets.py").read_text()
 for name in ("POWER_RAPID", "POWER_STRONG", "POWER_SPEED", "POWER_EXTRA_LIFE"):
@@ -30,11 +31,18 @@ assert "inc extra_lives_collected" in powerups
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"GAME_FINALE_{state}" in constants
 assert "sta projectile_active" in finale and "sta boss_shot_active" in finale
+for token in ("terminal_script:", "terminal_scroll:", "ROOT", "finale_script_done"):
+    assert token in finale, f"missing advanced finale token {token}"
+assert "COMMODORE_COLUMN" in input_source and "COMMODORE_MASK" in input_source
+assert "jsr finale_begin         ; Commodore key" in (root / "src/game.s").read_text()
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"cmp #GAME_FINALE_{state}" in scheduler
 assert "lda applause_events" in scheduler
 for code in range(0xA0, 0xA8):
     assert f"lda #${code:02X}" in scheduler, f"missing precise finale failure code ${code:02X}"
+for code in (0xA8, 0xA9):
+    assert f"lda #${code:02X}" in scheduler, f"missing terminal finale failure code ${code:02X}"
+assert "lda #$AA" in scheduler and "sta cheat_pressed" in scheduler
 # ca65 cheap-local labels are scoped by the previous non-local label. The object
 # type helper must not split object_collide from its later @enemy/@boss handlers.
 collide = objects.index("object_collide:")
