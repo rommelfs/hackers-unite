@@ -44,6 +44,8 @@
 .export power_weapon, rapid_timer, strong_timer, speed_timer, power_flash
 .export powerups_collected, extra_lives_collected, powerups_expired
 .export finale_timer, finale_step, applause_events
+.export cheat_held, cheat_previous, cheat_pressed
+.export finale_script_pos, finale_terminal_row, finale_terminal_col, finale_script_done
 
 .segment "ZEROPAGE"
 frame_pending:  .res 1
@@ -191,3 +193,10 @@ powerups_expired:      .res 1
 finale_timer:          .res 1
 finale_step:           .res 1
 applause_events:       .res 1
+cheat_held:             .res 1
+cheat_previous:         .res 1
+cheat_pressed:          .res 1
+finale_script_pos:      .res 1
+finale_terminal_row:    .res 1
+finale_terminal_col:    .res 1
+finale_script_done:     .res 1
