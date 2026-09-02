@@ -44,3 +44,14 @@ every frame. The shortcut is intentionally retained as a development/demo aid.
 Host-side source, asset and design validators pass in the implementation
 container. Full assembly, PAL VICE smoke/soak, D64 generation and screenshots of
 boot, scrolling demo and root prompt remain required in an equipped environment.
+
+## Equipped linker follow-up
+
+The first equipped build showed that the already tight `$6000-$7FFF` primary
+`CODE` area overflowed by 11 bytes after adding the Commodore feature. Moving only
+the matrix scanner was insufficient because the new call and game-state dispatch
+still consumed exactly the remaining primary headroom. The complete bounded input
+module now resides in the existing `$5800-$5FFF` `CODE3` window. Scheduler calls,
+joystick-first ordering, keyboard semantics and the memory map are unchanged,
+while the primary segment recovers the complete former input routine rather than
+only the scanner body.

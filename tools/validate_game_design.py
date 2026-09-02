@@ -34,6 +34,8 @@ assert "sta projectile_active" in finale and "sta boss_shot_active" in finale
 for token in ("terminal_script:", "terminal_scroll:", "ROOT", "finale_script_done"):
     assert token in finale, f"missing advanced finale token {token}"
 assert "COMMODORE_COLUMN" in input_source and "COMMODORE_MASK" in input_source
+assert 'jsr cheat_scan' in input_source
+assert '.segment "CODE3"\ninput_update:' in input_source
 assert "jsr finale_begin         ; Commodore key" in (root / "src/game.s").read_text()
 for state in ("WALK", "SCREEN", "DEMO", "APPLAUSE", "RESULT"):
     assert f"cmp #GAME_FINALE_{state}" in scheduler
