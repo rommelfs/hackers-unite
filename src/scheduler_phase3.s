@@ -266,11 +266,9 @@ frame_loop:
     bne :+
     jmp @fail
 :
+    lda #$59
+    sta test_fail_code
     lda secret_found
-    bne :+
-    jmp @fail
-:
-    lda trap_hits
     bne :+
     jmp @fail
 :

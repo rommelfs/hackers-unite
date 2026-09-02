@@ -77,3 +77,17 @@ clobber X, so incrementing X directly after the call did not reliably advance ID
 1-3 and could loop indefinitely. The harness now saves each stable ID in the
 existing `object_index` scratch byte and restores X before incrementing. A source
 validator enforces the save/restore pair around this test-only loop.
+
+The following equipped run reached `$54`. That code grouped mutable-block,
+secret-discovery and incidental live-route hazard contact, so it could not identify
+which contract failed. More importantly, a successful platforming route is allowed
+to jump over both cables. The grouped check now uses `$54` for the forced mutable
+block hit and `$59` for secret discovery only. Hazard behavior remains mandatory
+under the existing focused `$58` probe, which runs after the live VIC assertions
+so its intentional damage state cannot invalidate sprite publication checks.
+
+As a preventive rule, Phase-14 source validation now rejects `trap_hits` inside
+the secret-check block and requires the distinct `$59` diagnostic. Authored layout
+properties stay in the generated-asset validator; runtime mechanics use focused
+harnesses; incidental autoplay choreography is no longer treated as a mechanic
+proof when the player can validly avoid it.

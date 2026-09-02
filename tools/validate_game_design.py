@@ -62,4 +62,8 @@ assert "jsr autotest_collect_foyer_kit" in scheduler
 assert "cmp #2" in scheduler[scheduler.index("lda #$51"):scheduler.index("lda #$52")]
 pickup_harness = scheduler[scheduler.index("autotest_collect_foyer_kit:"):scheduler.index("autotest_enemy_exact_stomp:")]
 assert "stx object_index" in pickup_harness and "ldx object_index" in pickup_harness
+# Route choreography may legitimately avoid a hazard. Hazard mechanics belong to
+# the focused $58 probe after live VIC assertions, not the grouped secret checks.
+secret_checks = scheduler[scheduler.index("lda #$54"):scheduler.index("lda #$55")]
+assert "lda #$59" in secret_checks and "trap_hits" not in secret_checks
 print("game design validation: OK (4 power-ups, 5 finale states, visual roles)")
