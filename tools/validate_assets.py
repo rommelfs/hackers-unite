@@ -196,14 +196,34 @@ for layout_name, layout_map in (("level 1", tilemap), ("level 2", level2_map), (
                 f"at columns {solid_columns}, expected {allowed}"
             )
 
-# Foyer kit items sit on the safe main aisle before its first taught trap.
-for pickup_x, pickup_y in manifest["level1_pickups"]:
+# The foyer teaches one safe ground pickup, then uses two broad elevated rewards.
+for pickup_index, (pickup_x, pickup_y) in enumerate(manifest["level1_pickups"]):
     support_x = pickup_x // 16
     support_y = (pickup_y + 21) // 16
     if not (flags[tilemap[support_y * map_width + support_x]] & 1):
         errors.append(f"foyer kit item at ({pickup_x},{pickup_y}) lacks solid support")
-    if pickup_x >= manifest["level1_traps"][0] * 16:
-        errors.append(f"foyer kit item at ({pickup_x},{pickup_y}) appears after the teaching trap")
+    if pickup_index == 0 and pickup_x >= manifest["level1_traps"][0] * 16:
+        errors.append("foyer ENTRY pickup must precede the first taught trap")
+    if pickup_index > 0 and pickup_y == 139:
+        errors.append("later foyer kit rewards must teach elevated route reading")
+
+safe_start_end = manifest["level1_safe_start_end"]
+if any(flags[tilemap[9 * map_width + x]] & 2 for x in range(safe_start_end + 1)):
+    errors.append("foyer safe start contains a floor hazard")
+if manifest["level1_teaching_enemy_x"] // 16 >= manifest["level1_traps"][0]:
+    errors.append("foyer does not teach its first patrol before its first cable")
+for recovery_left, recovery_right in manifest["level1_recovery_spans"]:
+    if recovery_right - recovery_left < 1:
+        errors.append("foyer recovery span is too short")
+    if any(flags[tilemap[9 * map_width + x]] & 2 for x in range(recovery_left, recovery_right + 1)):
+        errors.append("foyer recovery span contains a hazard")
+
+# The mutable secret at (10,8) is injected by physics rather than stored in the
+# static map. A solid row-7 platform directly above it creates a 32-pixel wall
+# with no player-height corridor and blocks the mandatory route before scrolling.
+hidden_x, hidden_y = manifest["level1_hidden_block"]
+if flags[tilemap[(hidden_y - 1) * map_width + hidden_x]] & 1:
+    errors.append("foyer stacks solid geometry above the mutable hidden block")
 
 # Every Level-2 objective sits exactly 21 pixels above an authoritative solid
 # platform. The 48-pixel tier is reachable only with the implemented run jump.
