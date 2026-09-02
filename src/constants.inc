@@ -2,6 +2,9 @@
 
 CPU_PORT        = $01
 CIA1_PORT_A     = $DC00
+CIA1_PORT_B     = $DC01
+CIA1_DDRA       = $DC02
+CIA1_DDRB       = $DC03
 CIA1_ICR        = $DC0D
 CIA2_PORT_A     = $DD00
 CIA2_ICR        = $DD0D
@@ -86,6 +89,9 @@ GAME_FINALE_SCREEN = 12
 GAME_FINALE_DEMO = 13
 GAME_FINALE_APPLAUSE = 14
 GAME_FINALE_RESULT = 15
+
+COMMODORE_COLUMN = $7F     ; keyboard matrix PA7 selected low
+COMMODORE_MASK   = $20     ; Commodore key is PB5 in selected column
 
 POWER_NONE       = 0
 POWER_RAPID      = 1
