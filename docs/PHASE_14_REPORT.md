@@ -61,3 +61,12 @@ before the camera comfort window. The landing now ends at column 8, leaving the
 secret block isolated and the ground route traversable. Asset validation rejects
 any future solid metatile directly above that hidden block; the smoke test keeps
 its original eight-shift requirement so it continues to detect blocked routes.
+
+After the route fix, the equipped smoke run reached `$51`. The old assertion
+expected four objects to have entered the camera margin at the early snapshot,
+because all three kit objects formerly sat on the opening floor. Phase 14 places
+PAYLOAD and TRIGGER in later camera regions by design. The live assertion now
+requires ENTRY plus the first patrol, then a focused harness passes all three kit
+IDs through the production fixed-box pickup handler while preserving the live
+player position. This retains pickup-type and persistence coverage without
+pretending the later rewards are already visible.

@@ -3,6 +3,7 @@
 .export objects_init, objects_update, objects_sprite_init, objects_test_enemy_collision
 .export objects_projectile_hit
 .export objects_test_boss_update
+.export objects_test_object_collision
 .import object_sprite_data, boss_sprite_data
 .import action_sprite_data
 .import camera_pixel_lo, camera_pixel_hi, frame_counter_lo
@@ -521,6 +522,7 @@ load_enemy_left_bound:
 
 ; Software AABB test. Player and objects keep fixed boxes independent of art.
 object_collide:
+objects_test_object_collision = object_collide
     ; Convert player 12.4 X to integer and subtract object X.
     lda player_x_lo
     lsr

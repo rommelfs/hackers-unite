@@ -41,6 +41,7 @@
 .import respawn_pending, death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
+.import objects_test_object_collision
 .import powerups_update
 .import finale_timer, applause_events
 
@@ -227,10 +228,17 @@ frame_loop:
     lda #$51
     sta test_fail_code
     lda objects_activated
-    cmp #4
+    ; The Phase-14 live snapshot has reached ENTRY and the first patrol. PAYLOAD
+    ; and TRIGGER intentionally live in later camera regions, so demanding four
+    ; activations here encoded the superseded opening-floor placement.
+    cmp #2
     bcs :+
     jmp @fail
 :
+    lda object_persistence
+    and #$F1               ; retain enemy/secret bits, replay kit IDs 1-3 once
+    sta object_persistence
+    jsr autotest_collect_foyer_kit
     lda #$52
     sta test_fail_code
     lda objects_collected
@@ -1277,6 +1285,65 @@ autotest_enemy_stomp:
     sta object_active
     ldx #0
     jsr objects_test_enemy_collision
+    rts
+
+; Exercise all three foyer pickup meanings through the production fixed-box
+; collision path without pretending their later camera regions are visible at
+; the early smoke snapshot. Preserve the live player position for VIC checks.
+autotest_collect_foyer_kit:
+    lda player_x_lo
+    pha
+    lda player_x_hi
+    pha
+    lda player_y_lo
+    pha
+    lda player_y_hi
+    pha
+    ldx #1
+@pickup:
+    lda object_x_lo,x
+    asl
+    asl
+    asl
+    asl
+    sta player_x_lo
+    lda object_x_hi,x
+    asl
+    asl
+    asl
+    asl
+    sta player_x_hi
+    lda object_x_lo,x
+    lsr
+    lsr
+    lsr
+    lsr
+    ora player_x_hi
+    sta player_x_hi
+    lda object_y,x
+    asl
+    asl
+    asl
+    asl
+    sta player_y_lo
+    lda object_y,x
+    lsr
+    lsr
+    lsr
+    lsr
+    sta player_y_hi
+    jsr objects_test_object_collision
+    inx
+    cpx #4
+    bne @pickup
+    pla
+    sta player_y_hi
+    pla
+    sta player_y_lo
+    pla
+    sta player_x_hi
+    pla
+    sta player_x_lo
     rts
 
 ; X = enemy ID. Reproduce the exact tile-landing frame: the floor has snapped
