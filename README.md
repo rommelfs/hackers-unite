@@ -1,8 +1,8 @@
 # Hackers Unite
 
 Native C64 platform game, built from scratch with ca65/ld65. The current milestone
-is **Phase 13: readable collision affordances and camera-first sliced respawning on
-top of the Phase-12 hack.lu briefing**.
+is **Phase 16: a backstage mastery route completing the platformer-first
+foyer/auditorium/stage vertical slice**.
 
 ## Requirements
 
@@ -86,5 +86,11 @@ Controls: up, up-left or up-right jumps; a jump with at least one pixel/frame of
 - full-height 16-pixel spike and electrical warning silhouettes
 - cold-boot `HACK.LU 2026` mission briefing with a staged transition into gameplay
 - `FOYER`/`HACKLU`/`STAGE` objective labels for the current three-layout slice
+- platformer-first foyer pacing: safe arrival, patrol lesson, isolated cables,
+  elevated kit rewards and authored recovery ground
+- two-route auditorium pacing: continuous lower recovery aisle, optional upper
+  running-jump waves and explicit branch/rejoin landings
+- backstage mastery pacing: grouped warning fields, recovery decks, a reachable
+  lighting gantry and a safe return to the visible stage
 
-See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).
+See [docs/MEMORY_MAP.md](docs/MEMORY_MAP.md), [docs/GRAPHICS_FORMAT.md](docs/GRAPHICS_FORMAT.md), [docs/RASTER_BUDGET.md](docs/RASTER_BUDGET.md), [docs/PHASE_12_REPORT.md](docs/PHASE_12_REPORT.md), [docs/PHASE_13_REPORT.md](docs/PHASE_13_REPORT.md), [docs/PHASE_14_REPORT.md](docs/PHASE_14_REPORT.md), [docs/PHASE_15_REPORT.md](docs/PHASE_15_REPORT.md), [docs/PHASE_16_REPORT.md](docs/PHASE_16_REPORT.md), [docs/TEST_REPORT.md](docs/TEST_REPORT.md), and [docs/VISUAL_LANGUAGE.md](docs/VISUAL_LANGUAGE.md).

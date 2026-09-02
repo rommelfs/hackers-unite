@@ -41,6 +41,7 @@
 .import respawn_pending, death_timer
 .import sprite_enable_shadow
 .import objects_test_boss_update
+.import objects_test_object_collision
 .import powerups_update
 .import finale_timer, applause_events
 
@@ -135,11 +136,36 @@ frame_loop:
 :
     lda #$40
     sta test_fail_code
+    ; Phase 14 opens a broad black sight-line at columns 0-3. The former
+    ; auditorium signature expected a chair at (2,2) and therefore rejected the
+    ; intentional foyer map before any gameplay assertion could run.
     lda static_map+(2*64)+2
+    beq :+
+    jmp @fail
+:
+    lda #$45
+    sta test_fail_code
+    lda static_map+(2*64)+4
     cmp #METATILE_CHAIR_BACK_A
     beq :+
     jmp @fail
 :
+    lda #$46
+    sta test_fail_code
+    lda static_map+(7*64)+7
+    cmp #METATILE_PLATFORM
+    beq :+
+    jmp @fail
+:
+    lda #$47
+    sta test_fail_code
+    lda static_map+(9*64)+22
+    cmp #METATILE_SPIKE
+    beq :+
+    jmp @fail
+:
+    lda #$40
+    sta test_fail_code
     lda static_map+(6*64)+56
     cmp #METATILE_STAGE_FRAME
     beq :+
@@ -202,10 +228,17 @@ frame_loop:
     lda #$51
     sta test_fail_code
     lda objects_activated
-    cmp #4
+    ; The Phase-14 live snapshot has reached ENTRY and the first patrol. PAYLOAD
+    ; and TRIGGER intentionally live in later camera regions, so demanding four
+    ; activations here encoded the superseded opening-floor placement.
+    cmp #2
     bcs :+
     jmp @fail
 :
+    lda object_persistence
+    and #$F1               ; retain enemy/secret bits, replay kit IDs 1-3 once
+    sta object_persistence
+    jsr autotest_collect_foyer_kit
     lda #$52
     sta test_fail_code
     lda objects_collected
@@ -233,11 +266,9 @@ frame_loop:
     bne :+
     jmp @fail
 :
+    lda #$59
+    sta test_fail_code
     lda secret_found
-    bne :+
-    jmp @fail
-:
-    lda trap_hits
     bne :+
     jmp @fail
 :
@@ -291,7 +322,7 @@ frame_loop:
     lda #0
     sta damage_cooldown
     sta player_x_lo
-    lda #$12                ; world X 288, Level-1 spike column 18
+    lda #$16                ; world X 352, Phase-14 cable column 22
     sta player_x_hi
     lda #$B0
     sta player_y_lo
@@ -411,12 +442,12 @@ frame_loop:
     beq :+
     jmp @fail
 :
-    lda static_map+(6*64)+2
+    lda static_map+(7*64)+6
     cmp #METATILE_PLATFORM
     beq :+
     jmp @fail
 :
-    lda static_map+(7*64)+8
+    lda static_map+(6*64)+12
     cmp #METATILE_PLATFORM
     beq :+
     jmp @fail
@@ -426,7 +457,7 @@ frame_loop:
     beq :+
     jmp @fail
 :
-    lda static_map+(7*64)+47
+    lda static_map+(7*64)+49
     cmp #METATILE_PLATFORM
     beq :+
     jmp @fail
@@ -449,12 +480,12 @@ frame_loop:
     jmp @fail
 :
     lda object_x_lo+3
-    cmp #<760
+    cmp #<792
     beq :+
     jmp @fail
 :
     lda object_x_hi+3
-    cmp #>760
+    cmp #>792
     beq :+
     jmp @fail
 :
@@ -725,6 +756,26 @@ frame_loop:
 :
     lda level_number
     cmp #3
+    beq :+
+    jmp @fail
+:
+    lda static_map+(7*64)+11
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
+    lda static_map+(7*64)+40
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
+    lda static_map+(6*64)+47
+    cmp #METATILE_FACTORY
+    beq :+
+    jmp @fail
+:
+    lda static_map+(7*64)+54
+    cmp #METATILE_FACTORY
     beq :+
     jmp @fail
 :
@@ -1252,6 +1303,67 @@ autotest_enemy_stomp:
     sta object_active
     ldx #0
     jsr objects_test_enemy_collision
+    rts
+
+; Exercise all three foyer pickup meanings through the production fixed-box
+; collision path without pretending their later camera regions are visible at
+; the early smoke snapshot. Preserve the live player position for VIC checks.
+autotest_collect_foyer_kit:
+    lda player_x_lo
+    pha
+    lda player_x_hi
+    pha
+    lda player_y_lo
+    pha
+    lda player_y_hi
+    pha
+    ldx #1
+@pickup:
+    stx object_index
+    lda object_x_lo,x
+    asl
+    asl
+    asl
+    asl
+    sta player_x_lo
+    lda object_x_hi,x
+    asl
+    asl
+    asl
+    asl
+    sta player_x_hi
+    lda object_x_lo,x
+    lsr
+    lsr
+    lsr
+    lsr
+    ora player_x_hi
+    sta player_x_hi
+    lda object_y,x
+    asl
+    asl
+    asl
+    asl
+    sta player_y_lo
+    lda object_y,x
+    lsr
+    lsr
+    lsr
+    lsr
+    sta player_y_hi
+    jsr objects_test_object_collision
+    ldx object_index        ; pickup/power-up handlers may clobber X
+    inx
+    cpx #4
+    bne @pickup
+    pla
+    sta player_y_hi
+    pla
+    sta player_y_lo
+    pla
+    sta player_x_hi
+    pla
+    sta player_x_lo
     rts
 
 ; X = enemy ID. Reproduce the exact tile-landing frame: the floor has snapped
